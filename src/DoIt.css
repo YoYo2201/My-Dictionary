@@ -1,0 +1,122 @@
+#DoItContainer{
+    display: flex;
+    position: relative;
+height: 48px;
+left: 0px;
+top: 0px;
+
+background: #D4DDE8;
+}
+
+#IconMain{
+    position: relative;
+width: 39px;
+height: 47px;
+left: 4px;
+top: 0px;
+}
+
+#NameFont{
+    position: relative;
+width: 258px;
+height: 28px;
+left: 20px;
+top: 11px;
+
+font-family: 'Kameron', serif;
+font-style: normal;
+font-weight: 400;
+font-size: 25px;
+line-height: 20px;
+/* or 91% */
+
+display: flex;
+align-items: center;
+letter-spacing: 0.09em;
+
+color: #000000;
+
+}
+
+#TaskContain{
+    top: 75px;
+    position: absolute;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.Task{
+    border-radius: 7px;
+    color: white;
+    margin-top: 9px;
+    height: 50px;
+    position: relative;
+    left: 15px;
+    background-color: white;
+}
+
+i.addIcon::after{
+    content: '\e145';
+    top: 3px;
+    position: relative;
+    font-size: 32px;
+}
+
+i.addExpandIcon::after{
+    content: '\f1ce';
+    position: relative;
+}
+
+i.closeIcon::after{
+    content: '\e5cd';
+    position: relative;
+    top: 3px;
+    font-size: 32px;
+}
+
+#addIcon{
+    border: none;
+    background: none;
+    position: absolute;
+    right: 0px;
+    top: 3px;
+}
+
+.design{
+    width: 10px;
+    height: 34px;
+    top: 8px;
+    position: relative;
+    background-color: blue;
+    left: -5px;
+}
+
+.TaskContent{
+    position: relative;
+    bottom: 19px;
+    left: 12px;
+    display: flex;
+}
+
+.TaskFont{
+    font-family: 'Kurale', serif;
+font-style: normal;
+font-weight: 400;
+font-size: 19px;
+line-height: 20px;
+/* or 105% */
+
+display: flex;
+align-items: center;
+letter-spacing: 0.09em;
+
+color: #000000;
+
+}
+
+#addExpandIcon{
+    border: none;
+    background: none;
+    bottom: 6px;
+    position: relative;
+}
