@@ -37,7 +37,7 @@ export default class ForgotPassword extends Component {
         
       const PORT = process.env.PORT || 4000;
         
-      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/verifyEmail' : `${data.URL}:${PORT}/api/auth/verifyEmail`
+      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/verifyEmail' : `${data.URL}:${PORT}/api/auth/verifyEmail`
         let result = await fetch(url, {
             method: "POST",
               headers: {
