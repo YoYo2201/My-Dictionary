@@ -55,9 +55,9 @@ export default class DoIt extends Component {
         button_i.innerHTML = "&#xe5cf";
   
         button.onclick = () => this.expandWord(arr, i);
+        button.append(task_font);
         button.appendChild(button_i);
         task.append(design);
-        task_content.append(task_font);
         task_content.append(button);
         task.append(task_content);
         task_cover.append(task);
@@ -199,7 +199,6 @@ export default class DoIt extends Component {
     if(!JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary')))
       this.getTasks(this.props.data[1]);
     else {
-      console.log("Hey there!!!");
       this.props.active[1] = true;
       this.props.active[0] = true;
       this.displayDictionary();

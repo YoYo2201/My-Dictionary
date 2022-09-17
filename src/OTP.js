@@ -18,7 +18,6 @@ export default class OTP extends Component {
     }
 
     async Resend(){
-      console.log(this.props.state.data);
       let otp = this.props.state.data.otp;
       let email = this.props.state.data.email;
       let name = this.props.state.data.name;

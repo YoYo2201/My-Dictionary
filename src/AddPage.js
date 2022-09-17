@@ -17,7 +17,6 @@ export default class AddPage extends Component {
       const word = document.getElementById('name').value;
       const meaning = document.getElementById('description').value;
       const email = this.props.data[1];
-      console.log("email: "+email);
 
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
