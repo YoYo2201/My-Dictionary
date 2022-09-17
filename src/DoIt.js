@@ -132,6 +132,8 @@ export default class DoIt extends Component {
       localStorage.setItem(email+'Dictionary', JSON.stringify(result.status));
       this.props.active[1] = true;
       this.props.active[0] = true;
+      this.removeDictionary();
+      this.displayDictionary();
     }
   }
 
@@ -196,13 +198,7 @@ export default class DoIt extends Component {
   componentDidMount() {
     if(localStorage.getItem('Email'))
       this.props.data[1] = localStorage.getItem('Email');
-    if(!JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary')))
-      this.getTasks(this.props.data[1]);
-    else {
-      this.props.active[1] = true;
-      this.props.active[0] = true;
-      this.displayDictionary();
-    }
+    this.getTasks(this.props.data[1]);
   }
 
   render() {
