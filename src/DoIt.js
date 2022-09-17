@@ -196,6 +196,8 @@ export default class DoIt extends Component {
   }
 
   componentDidMount() {
+    // if(window.performance.navigation.type !== 0)
+    //   this.props.navigate('\do-it', true);
     if(localStorage.getItem('Email'))
       this.props.data[1] = localStorage.getItem('Email');
     this.getTasks(this.props.data[1]);
