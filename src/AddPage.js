@@ -21,7 +21,7 @@ export default class AddPage extends Component {
 
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
-      let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/auth/addPage' : `${data.URL}:${PORT}/api/auth/addPage`
+      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/addPage' : `${data.URL}:${PORT}/api/auth/addPage`
       bg.filter = 'blur(2px)';
       this.props.setData('load', true);
       const result = await fetch(url, {

@@ -24,7 +24,7 @@ export default class OTP extends Component {
       let name = this.props.state.data.name;
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
-        let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/resendOTP' : `${data.URL}:${PORT}/api/auth/sendOTP`
+        let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/resendOTP' : `${data.URL}:${PORT}/api/auth/sendOTP`
       bg.filter = 'blur(2px)';
       this.props.setStateData('load', true);
       let result = await fetch(url, {
@@ -57,7 +57,7 @@ export default class OTP extends Component {
       let password = this.props.state.data.password;
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
-      let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/auth/signUp' : `${data.URL}:${PORT}/api/auth/signUp`
+      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/signUp' : `${data.URL}:${PORT}/api/auth/signUp`
       bg.filter = 'blur(2px)';
       this.props.setStateData('load', true);
       const result = await fetch(url, {
