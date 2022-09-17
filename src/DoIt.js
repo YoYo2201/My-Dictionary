@@ -219,7 +219,7 @@ export default class DoIt extends Component {
           width: window.innerWidth + "px",
         }}
       >
-        {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
+        {/* {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined} */}
         <div id="DoItContainer" style={{ width: window.innerWidth + "px" }}>
           <img src={icon} alt="Icon" id="IconMain"></img>
           <p
