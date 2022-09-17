@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import "./StartPage.css";
 import StartPage1 from "./StartPage1";
-import StartPage2 from "./StartPage2";
 import StartPage3 from "./StartPage3";
+import { Navigate } from 'react-router-dom';
 
 export default class StartPage extends Component {
   constructor() {
@@ -47,11 +47,16 @@ export default class StartPage extends Component {
   }
 
   setCirclesColor() {
+    try {
     let circles = document.querySelectorAll(".circle");
     circles.forEach((circle) => {
       circle.style.backgroundColor = "white";
       this.clearAnimation(circle);
     });
+  }
+  catch {
+    ;
+  }
   }
 
   setAnimation(element) {
@@ -61,10 +66,15 @@ export default class StartPage extends Component {
     element.animationName = "fadeIn";
   }
   setCircleColorByID() {
+    try {
     let circle = document.getElementById(`c${this.state.pageNo}`).style;
     let frame = document.getElementById("frame").style;
     this.setAnimation(circle);
     circle.backgroundColor = "black";
+    }
+    catch {
+      ;
+    }
   }
 
   handleGesture() {
@@ -77,7 +87,7 @@ export default class StartPage extends Component {
   }
 
   onSlideRight() {
-    if (this.state.pageNo < 3) this.setState({ pageNo: this.state.pageNo + 1 });
+    if (this.state.pageNo < 2) this.setState({ pageNo: this.state.pageNo + 1 });
   }
 
   onSlideLeft() {
@@ -86,6 +96,7 @@ export default class StartPage extends Component {
 
   render() {
     const setHeight = () => {
+      try {
       document.getElementById("start").style.height = window.innerHeight + "px";
       document.getElementById("startPage1").style.height =
         window.innerHeight + "px";
@@ -100,10 +111,16 @@ export default class StartPage extends Component {
       let slide = document.getElementById("slide").style;
       slide.top = window.innerHeight * 0.82 + "px";
       slide.left = window.innerWidth / 2 - 36 + "px";
+      }
+      catch{
+        ;
+      }
     };
     window.addEventListener("resize", setHeight);
 
     return (
+      <>
+      {localStorage.getItem('Name') ? <Navigate to='/do-it' /> : undefined}
       <div
         id="start"
         style={{
@@ -133,11 +150,6 @@ export default class StartPage extends Component {
                 clearAnimation={this.clearAnimation}
               />
             ) : this.state.pageNo === 2 ? (
-              <StartPage2
-                setAnimation={this.setAnimation}
-                clearAnimation={this.clearAnimation}
-              />
-            ) : this.state.pageNo === 3 ? (
               <StartPage3
                 navigate={this.props.navigate}
                 setAnimation={this.setAnimation}
@@ -158,10 +170,10 @@ export default class StartPage extends Component {
               style={{ backgroundColor: "black" }}
             ></div>
             <div className="circle" id="c2"></div>
-            <div className="circle" id="c3"></div>
           </div>
         </div>
       </div>
+      </>
     );
   }
 }

@@ -55,6 +55,16 @@ color: #000000;
     background-color: white;
 }
 
+.TaskMeaning {
+    border-radius: 17px;
+    color: white;
+    margin-top: 4px;
+    height: 70px;
+    position: relative;
+    left: 15px;
+    background-color: #ff7800;
+}
+
 i.addIcon::after{
     content: '\e145';
     top: 3px;
@@ -67,6 +77,13 @@ i.addExpandIcon::after{
     position: relative;
 }
 
+i.expandMore::after {
+    /* content: '\e5cf'; */
+    position: relative;
+    font-size: 30px;
+    color: black;
+}
+
 i.closeIcon::after{
     content: '\e5cd';
     position: relative;
@@ -75,6 +92,21 @@ i.closeIcon::after{
 }
 
 #addIcon{
+    border: none;
+    background: none;
+    position: absolute;
+    right: 40px;
+    top: 3px;
+}
+
+i.logout::after {
+    content: '\e9ba';
+    top: 3px;
+    position: relative;
+    font-size: 32px;
+}
+
+#logout {
     border: none;
     background: none;
     position: absolute;
@@ -93,30 +125,45 @@ i.closeIcon::after{
 
 .TaskContent{
     position: relative;
-    bottom: 19px;
+    bottom: 24px;
     left: 12px;
     display: flex;
 }
 
 .TaskFont{
     font-family: 'Kurale', serif;
-font-style: normal;
-font-weight: 400;
-font-size: 19px;
-line-height: 20px;
-/* or 105% */
-
-display: flex;
-align-items: center;
-letter-spacing: 0.09em;
-
-color: #000000;
-
+    font-style: normal;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.09em;
+    color: #000000;
+    position: relative;
+    /* height: 70px; */
+    height: 30px;
 }
 
-#addExpandIcon{
+.TaskFont1{
+    font-family: 'Kurale', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.09em;
+    color: #000000;
+    position: relative;
+    height: 70px;
+}
+
+
+
+.expandMore{
     border: none;
     background: none;
-    bottom: 6px;
+    bottom: 1px;
     position: relative;
 }

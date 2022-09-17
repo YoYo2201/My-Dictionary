@@ -1,8 +1,11 @@
-import React, { Component } from "react";
-import icon from "./res/To Do icon.webp";
+import React, { Component, useEffect } from "react";
+import { BackHandler } from 'react-native-web';
+import icon from "./res/dictionary.jpg";
 import { Link } from 'react-router-dom';
 import "./SignUp.css";
 import "./SignIn.css"
+import data from './URL.json'
+import Alert from './Alert'
 import SpinnerVerify from "./SpinnerVerify";
 import './ForgotPassword.css'
 
@@ -10,39 +13,108 @@ export default class ForgotPassword extends Component {
     constructor(props) {
         super(props);
         this.authenticate = this.authenticate.bind(this);
-        this.SignUp = this.SignUp.bind(this);
-        this.verifyIt = this.verifyIt.bind(this);
-        this.props.setStateData({
-          password: 'visibility',
-          confirmPassword: 'visibility'
+        this.Forgot = this.Forgot.bind(this);
+        this.VerifyIt = this.VerifyIt.bind(this);
+        this.generateOTP = this.generateOTP.bind(this);
+        this.props.setStateData('popCount', 0);
+        this.state = {disable: true, spinnerActive: false, verify: false, otp: null};
+    }
+
+    async Forgot() {
+      let email = document.getElementById('email').value.toLowerCase();
+      this.props.setStateData('data', {email: email})
+      if(email.length === 0)
+        this.props.alertFunc('danger', 'Email cannot be empty!!');
+      else
+      {
+        const otp = this.generateOTP();
+        this.setState({
+          otp: otp,
         })
-        this.state = {disable: true, spinnerActive: false, verify: false};
+        this.setState({
+          spinnerActive: true,
+        });
+        
+      const PORT = process.env.PORT || 4000;
+        
+      let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/verifyEmail' : `${data.URL}:${PORT}/api/auth/verifyEmail`
+        let result = await fetch(url, {
+            method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email,
+                otp
+              }),
+          }).then((res) => res.json());
+          
+          this.setState({
+            spinnerActive: false,
+          });
+      
+          if(result.status === "ok")
+          {
+            this.setState({
+              verify: true,
+              disable: false,
+            })
+            this.props.setStateData('data', {name: result.name, email: email})
+            this.props.alertFunc('success', 'Enter OTP sent to your Registered Email ID!');
+
+          }
+          else if(result.status === "Not Exists")
+          {
+            this.setState({
+              verify: false,
+            })
+            this.props.alertFunc('danger', "Email ID is not Registered!!!");
+          }
+          else
+          {
+            this.setState({
+              verify: false,
+            })
+            this.props.alertFunc('danger', "Some Error occurred!!!");
+          }
+      }
     }
 
-    async SignUp(event) {
+    VerifyIt(event) {
       event.preventDefault();
-      this.props.navigate('/change-password', false);
-    // let spinState = this.state.spinnerActive;
-    // this.setState({
-    //     spinnerActive: !spinState});
-    }
-
-    verifyIt() {
-      this.setState({
-        verify: true
-      })
+      let otpCheck = document.getElementById('password').value;
+      if(this.state.otp === Number(otpCheck))
+      {
+        this.props.alertFunc('success', "Email Verified!");
+        this.props.navigate('/change-password', true);
+      }
+      else
+        this.props.alertFunc('danger', "OTP is Incorrect!!!");
     }
 
     authenticate() {
       const form = document.getElementById('SignUp')
-      form.addEventListener('submit', this.SignUp)
+      form.addEventListener('submit', this.VerifyIt)
+    }
+
+    generateOTP() {
+      return Math.floor(100000 + Math.random() * 900000);
     }
 
     componentDidMount() {
         this.props.alignForm();
         let SignUpC = document.getElementById('SignUpContainer').style;
         SignUpC.height = window.innerHeight - 60 - ((window.innerHeight/5)+72) + "px";
+        window.onpopstate = () => {
+          if(this.props.state.popCount === 0)
+          {
+            this.props.setStateData('popCount', 1);
+            window.history.pushState({}, undefined, "/sign-in");
+            this.props.navigate(-1, true);
+          }
+        }
     }
+
   render() {
     window.addEventListener("resize", this.props.setHeight);
     return (
@@ -53,6 +125,7 @@ export default class ForgotPassword extends Component {
           width: window.innerWidth + "px",
         }}
       >
+        {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
         <div id="iconImageDo" style={{width: window.innerWidth+"px", height: (window.innerHeight/5)+57 + "px"}}>
           <img
             src={icon}
@@ -73,7 +146,7 @@ export default class ForgotPassword extends Component {
                     placeholder="Enter Registered Email"
                     required
                   />
-                  {this.state.spinnerActive === true ? <SpinnerVerify/> : this.state.verify === true ? <i class="verify material-icons"></i> : <button type="button" className="verify-forgot" onClick={this.verifyIt}>Verify</button>}
+                  {this.state.spinnerActive === true ? <SpinnerVerify/> : this.state.verify === true ? <i class="verify material-icons"></i> : <button type="button" className="verify-forgot" onClick={this.Forgot}>Verify</button>}
                 </div>
                 <div className="form">
                   <label for="password">
@@ -94,12 +167,11 @@ export default class ForgotPassword extends Component {
                     placeholder="Enter OTP"
                     disabled={this.state.disable}
                     autoComplete="new-password"
-                    minLength={8}
                     required
                   />
                 </div>
                 <div className="form">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate}>Continue</button>
+                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate} disabled={this.state.disable}>Continue</button>
                 </div>
           </form>
           </div>

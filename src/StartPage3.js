@@ -19,8 +19,13 @@ export default class StartPage3 extends Component {
 
   render() {
     const setHeight = () => {
+      try {
         let iconDiv = document.getElementById('buttonDiv').style;
         iconDiv.top = window.innerHeight*0.10+"px";
+      }
+      catch {
+        ;
+      }
     }
     window.addEventListener("resize", setHeight);
     return (

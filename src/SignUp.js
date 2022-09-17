@@ -1,6 +1,9 @@
 import React, { Component } from "react";
-import icon from "./res/To Do icon.webp";
+import icon from "./res/dictionary.jpg";
 import { Link } from 'react-router-dom';
+import Alert from './Alert';
+import Spinner from "./Spinner";
+import data from './URL.json'
 import "./SignUp.css";
 
 export default class SignUp extends Component {
@@ -8,15 +11,55 @@ export default class SignUp extends Component {
         super(props);
         this.authenticate = this.authenticate.bind(this);
         this.SignUp = this.SignUp.bind(this);
-        this.props.setStateData({
-          password: 'visibility',
-          confirmPassword: 'visibility'
-        })
+        this.generateOTP = this.generateOTP.bind(this);
+        this.props.setStateData('password', 'visibility')
+        this.props.setStateData('confirm-password', 'visibility')
     }
 
     async SignUp(event) {
       event.preventDefault();
-      this.props.navigate('/otp', false);
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value.toLowerCase();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      if(password !== confirmPassword)
+        this.props.alertFunc('danger', 'Passwords do not match!!');
+      else
+      {
+      let bg = document.getElementById('DoItBackground').style;
+      const PORT = process.env.PORT || 4000;
+      const otp = this.generateOTP();
+      let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/sendOTP' : `${data.URL}:${PORT}/api/auth/sendOTP`
+      bg.filter = 'blur(2px)';
+      this.props.setStateData('load', true);
+      const result = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          otp
+        }),
+      }).then((res) => res.json());
+
+      this.props.setStateData('load', false);
+      bg.filter = '';
+      if (result.status === "ok") {
+        this.props.alertFunc('success', 'OTP Sent Successfully!!!');
+        this.props.setStateData('data', {name: name, email: email, password: password, otp: otp});
+        this.props.navigate('/otp', false);
+      } else if(result.status === "Exists"){
+        this.props.alertFunc('danger', "Username Already Exists!!!");
+      }
+      else if(result.status === "error")
+        this.props.alertFunc('danger', "Unable to Send OTP!!!");
+    }
+    }
+
+    generateOTP() {
+      return Math.floor(100000 + Math.random() * 900000);
     }
 
     authenticate() {
@@ -32,6 +75,8 @@ export default class SignUp extends Component {
   render() {
     window.addEventListener("resize", this.props.setHeight);
     return (
+      <>
+      {this.props.state.load && <Spinner/>}
       <div
         id="DoItBackground"
         style={{
@@ -39,6 +84,7 @@ export default class SignUp extends Component {
           width: window.innerWidth + "px",
         }}
       >
+        {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
         <div id="iconImageDo" style={{width: window.innerWidth+"px", height: (window.innerHeight/5)+57 + "px"}}>
           <img
             src={icon}
@@ -118,10 +164,11 @@ export default class SignUp extends Component {
                 </div>
           </form>
           <div id="linkSignIn">
-              <p id='SignInFont'>Already Have an Account?<Link to="/sign-in" className="signIn-visit" replace='true'>Click Here</Link></p>
+              <p id='SignInFont'>Already Have an Account?<Link to="/sign-in" className="signIn-visit" replace={true}>Click Here</Link></p>
           </div>
           </div>
       </div>
+      </>
     );
   }
 }

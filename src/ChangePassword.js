@@ -1,27 +1,62 @@
 import React, { Component } from "react";
-import icon from "./res/To Do icon.webp";
+import icon from "./res/dictionary.jpg";
 import { Link } from 'react-router-dom';
+import data from './URL.json'
+import Alert from './Alert';
+import Spinner from "./Spinner";
 import "./SignUp.css";
 
 export default class ChangePassword extends Component {
     constructor(props) {
         super(props);
         this.authenticate = this.authenticate.bind(this);
-        this.SignUp = this.SignUp.bind(this);
-        this.props.setStateData({
-          password: 'visibility',
-          confirmPassword: 'visibility'
-        })
+        this.ChangePass = this.ChangePass.bind(this);
+        this.props.setStateData('password', 'visibility');
+        this.props.setStateData('confirm-password', 'visibility');
     }
 
-    async SignUp(event) {
+    async ChangePass(event) {
       event.preventDefault();
-      this.props.navigate('/do-it', false);
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      if(password !== confirmPassword) {
+        this.props.alertFunc('danger', "Passwords do not match!!");
+      }
+      else
+      {
+      let bg = document.getElementById('DoItBackground').style;
+      const PORT = process.env.PORT || 4000;
+      let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/auth/changePassword' : `${data.URL}:${PORT}/api/auth/changePassword`
+      bg.filter = 'blur(2px)';
+      let email = this.props.state.data.email;
+      let name = this.props.state.data.name;
+      this.props.setStateData('load', true);
+      const result = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password
+        }),
+      }).then((res) => res.json());
+
+      this.props.setStateData('load', false);
+      bg.filter = '';
+      if (result.status === "ok") {
+        this.props.alertFunc('success', 'Password Changed!!!');
+        this.props.navigate('/sign-in', true);
+      }
+      else if(result.status === "error")
+        this.props.alertFunc('danger', "Unable to change Password!!!");
+    }
     }
 
     authenticate() {
-      const form = document.getElementById('SignUp')
-      form.addEventListener('submit', this.SignUp)
+      const form = document.getElementById('ChangePassword')
+      form.addEventListener('submit', this.ChangePass)
     }
 
     componentDidMount() {
@@ -32,6 +67,8 @@ export default class ChangePassword extends Component {
   render() {
     window.addEventListener("resize", this.props.setHeight);
     return (
+      <>
+      {this.props.state.load && <Spinner/>}
       <div
         id="DoItBackground"
         style={{
@@ -39,6 +76,7 @@ export default class ChangePassword extends Component {
           width: window.innerWidth + "px",
         }}
       >
+        {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
         <div id="iconImageDo" style={{width: window.innerWidth+"px", height: (window.innerHeight/5)+57 + "px"}}>
           <img
             src={icon}
@@ -48,7 +86,7 @@ export default class ChangePassword extends Component {
           ></img>
           <p id="SignUpFont" style={{width: '336px'}}>Change Password</p></div>
           <div id="SignUpContainer">
-          <form id="SignUp" action="/api/SignUp" autoComplete="current-password">
+          <form id="ChangePassword" autoComplete="current-password">
                 <div className="form">
                   <label for="password">
                     <i className="password material-icons"></i>
@@ -97,6 +135,7 @@ export default class ChangePassword extends Component {
           </form>
           </div>
       </div>
+      </>
     );
   }
 }

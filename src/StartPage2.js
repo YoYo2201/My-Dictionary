@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './StartPage.css'
-import icon from './res/To Do Image1.jpg'
+import icon from './res/dictionary.jpg'
 
 export default class StartPage2 extends Component {
   componentDidMount() {
@@ -10,10 +10,15 @@ export default class StartPage2 extends Component {
   }
   render() {
     const setHeight = () => {
+      try {
         let iconDiv = document.getElementById('iconDiv').style;
         iconDiv.height = window.innerHeight/3.1+"px";
         let iconD = document.getElementById('icon').style;
         iconD.height = window.innerHeight/3.1+"px";
+      }
+      catch {
+        ;
+      }
     }
     window.addEventListener("resize", setHeight);
     return (

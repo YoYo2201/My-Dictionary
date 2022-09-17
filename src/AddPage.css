@@ -4,7 +4,7 @@
     position: absolute;
     /* background-color: #ecebf0; */
     z-index: 1;
-    top: 145px;
+    top: 16vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -21,8 +21,8 @@
 
 #AddFont{
     position: relative;
-    top: 40px;
-    width: 143px;
+    top: 10vh;
+    width: 161px;
     height: 27px;
     display: block;
     margin: auto;
@@ -47,7 +47,7 @@ color: white;
     margin: auto;
 }
 
-input{
+input.AddPageInput{
     border-radius: 13px;
     padding: 1px 15px;
 }

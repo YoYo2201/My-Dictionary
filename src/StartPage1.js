@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import './StartPage.css'
-import icon from "./res/To Do icon.webp";
+import icon from "./res/dictionary.jpg";
 
 export default class StartPage1 extends Component {
   componentDidMount() {
@@ -10,22 +10,27 @@ export default class StartPage1 extends Component {
 
   render() {
     const setHeight = () => {
+      try {
         let iconDiv = document.getElementById('iconDiv').style;
-        iconDiv.height = window.innerHeight/3.1+"px";
+        iconDiv.height = window.innerHeight/2.8+"px";
         let iconD = document.getElementById('icon').style;
-        iconD.height = window.innerHeight/3.1+"px";
+        iconD.height = window.innerHeight/2.8+"px";
+      }
+      catch {
+        ;
+      }
     }
     window.addEventListener("resize", setHeight);
     return (
       <>
       <div id="start1">
-        <p id="title">DO IT</p>
-        <div id="iconDiv" style={{ height: window.innerHeight / 3.1 + "px" }}>
+        <p id="title">Dictionary</p>
+        <div id="iconDiv" style={{ height: window.innerHeight / 2.8 + "px" }}>
           <img
             src={icon}
             id="icon"
             alt="Icon"
-            style={{ height: window.innerHeight / 3.1 + "px" }}
+            style={{ height: window.innerHeight / 2.8 + "px" }}
           ></img>
         </div>
       </div>

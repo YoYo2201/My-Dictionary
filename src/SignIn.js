@@ -1,6 +1,9 @@
 import React, { Component } from "react";
-import icon from "./res/To Do icon.webp";
+import icon from "./res/dictionary.jpg";
+import data from './URL.json';
 import { Link } from 'react-router-dom';
+import Spinner from './Spinner'
+import Alert from './Alert'
 import "./SignUp.css";
 import "./SignIn.css"
 
@@ -8,21 +11,51 @@ export default class SignIn extends Component {
     constructor(props) {
         super(props);
         this.authenticate = this.authenticate.bind(this);
-        this.SignUp = this.SignUp.bind(this);
-        this.props.setStateData({
-          password: 'visibility',
-          confirmPassword: 'visibility'
-        })
+        this.SignIn = this.SignIn.bind(this);
+        this.props.setStateData('password', 'visibility')
+        this.props.setStateData('confirm-password', 'visibility')
+        // console.log("popCount in SignIn: ", this.props.state.popCount);
     }
 
-    async SignUp(event) {
+    async SignIn(event) {
       event.preventDefault();
-      this.props.navigate('/otp', false);
+      const email = document.getElementById('email').value.toLowerCase();
+      const password = document.getElementById('password').value;
+      let bg = document.getElementById('DoItBackground').style;
+      this.props.setStateData('load', true);
+      bg.filter = 'blur(2px)';
+      const PORT = process.env.PORT || 4000;
+      let url = process.env.NODE_ENV === 'production' ? 'https://firechat2201.herokuapp.com/api/auth/signIn' : `${data.URL}:${PORT}/api/auth/signIn`
+      const result = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password
+        }),
+      }).then((res) => res.json());
+
+      this.props.setStateData('load', false);
+      bg.filter = '';
+      if (result.status === "ok") {
+        this.props.alertFunc('success', 'Logged In Successfully!!!');
+        this.props.data[0] = result.name;
+        this.props.data[1] = email;
+        localStorage.setItem('Name', this.props.data[0]);
+        localStorage.setItem('Email', this.props.data[1]);
+        setTimeout(() => {
+          this.props.navigate('/do-it', true)
+        }, 1000);
+      } else {
+        this.props.alertFunc("danger", result.error);
+      }
     }
 
     authenticate() {
       const form = document.getElementById('SignUp')
-      form.addEventListener('submit', this.SignUp)
+      form.addEventListener('submit', this.SignIn)
     }
 
     componentDidMount() {
@@ -33,6 +66,8 @@ export default class SignIn extends Component {
   render() {
     window.addEventListener("resize", this.props.setHeight);
     return (
+      <>
+      {this.props.state.load && <Spinner/>}
       <div
         id="DoItBackground"
         style={{
@@ -40,6 +75,7 @@ export default class SignIn extends Component {
           width: window.innerWidth + "px",
         }}
       >
+        {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
         <div id="iconImageDo" style={{width: window.innerWidth+"px", height: (window.innerHeight/5)+57 + "px"}}>
           <img
             src={icon}
@@ -77,7 +113,6 @@ export default class SignIn extends Component {
                     id="password"
                     className="Pass"
                     placeholder="Enter Password"
-                    minLength={8}
                     required
                   />
                 </div>
@@ -86,13 +121,14 @@ export default class SignIn extends Component {
                 </div>
           </form>
           <div id="linkSignIn">
-              <p id='SignInFont'>Forgot Password?<Link to="/forgot-password" className="signIn-visit" replace='false'>Click Here</Link></p>
+              <p id='SignInFont'>Forgot Password?<Link to="/forgot-password" className="signIn-visit" replace={false}>Click Here</Link></p>
           </div>
           <div id="linkSignIn">
-              <p id='SignInFont'>Don't Have an Account?<Link to="/sign-up" className="signIn-visit" replace='true'>Create One</Link></p>
+              <p id='SignInFont'>Don't Have an Account?<Link to="/sign-up" className="signIn-visit" replace={true}>Create One</Link></p>
           </div>
           </div>
       </div>
+      </>
     );
   }
 }
