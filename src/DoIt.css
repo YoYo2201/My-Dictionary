@@ -16,12 +16,18 @@ left: 4px;
 top: 0px;
 }
 
+.MuiButtonBase-root.MuiFab-root.MuiFab-circular.MuiFab-sizeSecondary.MuiFab-secondary.css-kznubb-MuiButtonBase-root-MuiFab-root {
+    position: absolute;
+    right: 6px;
+    bottom: 8px;
+}
+
 #NameFont{
     position: relative;
 width: 258px;
 height: 28px;
 left: 20px;
-top: 11px;
+top: 2px;
 
 font-family: 'Kameron', serif;
 font-style: normal;
@@ -30,19 +36,23 @@ font-size: 25px;
 line-height: 20px;
 /* or 91% */
 
-display: flex;
+display: inline;
 align-items: center;
 letter-spacing: 0.09em;
 
-color: #000000;
+color: white;
 
 }
 
 #TaskContain{
-    top: 75px;
-    position: absolute;
+    top: 11px;
+    position: relative;
     overflow-y: auto;
     overflow-x: hidden;
+    overflow: scroll;
+    box-shadow: rgb(32, 32, 32) 0px 0px 30px 21px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .Task{
@@ -56,10 +66,14 @@ color: #000000;
 }
 
 .TaskMeaning {
+    display: block;
     border-radius: 17px;
     color: white;
     margin-top: 4px;
-    height: 70px;
+    height: 100%;
+    overflow-y: auto;
+    word-wrap:break-word;
+    overflow-x: hidden;
     position: relative;
     left: 15px;
     background-color: #ff7800;
@@ -67,7 +81,6 @@ color: #000000;
 
 i.addIcon::after{
     content: '\e145';
-    top: 3px;
     position: relative;
     font-size: 32px;
 }
@@ -87,21 +100,17 @@ i.expandMore::after {
 i.closeIcon::after{
     content: '\e5cd';
     position: relative;
-    top: 3px;
-    font-size: 32px;
+    font-size: 1.5rem;
 }
 
 #addIcon{
     border: none;
     background: none;
-    position: absolute;
-    right: 40px;
-    top: 3px;
+    position: relative;
 }
 
 i.logout::after {
     content: '\e9ba';
-    top: 3px;
     position: relative;
     font-size: 32px;
 }
@@ -109,9 +118,17 @@ i.logout::after {
 #logout {
     border: none;
     background: none;
-    position: absolute;
+    position: relative;
     right: 0px;
-    top: 3px;
+    top: 2px;
+    left: 7px;
+    color: crimson;
+}
+
+#searchButton{
+    display: flex;
+    position: absolute;
+    right: 8px;
 }
 
 .design{
@@ -147,23 +164,34 @@ i.logout::after {
 
 .TaskFont1{
     font-family: 'Kurale', serif;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 28px;
-    display: inline-flex;
-    align-items: center;
-    letter-spacing: 0.09em;
-    color: #000000;
-    position: relative;
-    height: 70px;
+font-style: normal;
+font-weight: 400;
+font-size: 19px;
+line-height: 28px;
+display: block;
+letter-spacing: 0.09em;
+color: #000000;
+position: relative;
+left: 16px;
+overflow-y: auto;
+max-height: 80px;
+top: 3px;
 }
 
+.card {
+    margin-left: 23px;
+    margin-top: 9px;
+}
 
 
 .expandMore{
     border: none;
     background: none;
-    bottom: 1px;
+    bottom: 0px;
     position: relative;
+    right: 4px;
+}
+
+p {
+    margin-bottom: 0.5rem;
 }

@@ -7,23 +7,31 @@ import Spinner from './Spinner';
 import Alert from './Alert';
 import data from './URL.json'
 import AddPage from "./AddPage";
-import TaskContainer from "./TaskContainer";
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 
 export default class DoIt extends Component {
   constructor(props) {
     super(props);
-    this.authenticate = this.authenticate.bind(this);
     this.addTask = this.addTask.bind(this);
     this.setHeight = this.setHeight.bind(this);
-    this.SignUp = this.SignUp.bind(this);
     this.logout = this.logout.bind(this);
     this.getTasks = this.getTasks.bind(this);
     this.expandWord = this.expandWord.bind(this);
     this.shrinkWord = this.shrinkWord.bind(this);
     this.displayDictionary = this.displayDictionary.bind(this);
+    this.searchForWord = this.searchForWord.bind(this);
+    this.setAnimation = this.setAnimation.bind(this);
+    this.clearAnimation = this.clearAnimation.bind(this);
+    this.startScroll = this.startScroll.bind(this);
+    this.stopScroll = this.stopScroll.bind(this);
+    this.props.setStateData('popCount', 0);
     this.state = {
       addActive: false,
+      scrollId: null,
+      disableButton: true,
     }
+    this.scrollActive = 0;
   }
 
   displayDictionary() {
@@ -33,48 +41,63 @@ export default class DoIt extends Component {
       for(let i=0;i<arr.length;i++) {
         const task_cover = document.createElement("div");
         const task = document.createElement("div");
+        const word = document.createElement("div");
         const task_content = document.createElement("div");
         const task_font = document.createElement("p");
-        const design = document.createElement("div");
+        const meaning = document.createElement("h5");
         const button = document.createElement("button");
         const button_i = document.createElement("i");
         const task_contain = document.getElementById("TaskContain");
   
         task_cover.className = i;
-        task.className = "Task";
-        task_content.className = "TaskContent";
-        task_font.className = "TaskFont";
-        design.className = "design";
+        task.className = "card test-white bg-dark mb-3";
+        word.className = "card-header";
+        task_content.className = "card-body";
+        task.style.maxWidth = "18rem";
+        task_font.className = "TaskFont card-text";
+        meaning.className = "card-title";
         button.className = "expandMore " + i;
         button_i.className = "expandMore material-icons " + i;
         button.type = "button";
   
         task_font.innerText = arr[i][0];
-        task.id = i;
-        button_i.style.color = "black";
+        task.id = "Task"+i;
+        button_i.style.color = "white";
+        button.style.display = 'flex';
         button_i.innerHTML = "&#xe5cf";
+        // button
   
         button.onclick = () => this.expandWord(arr, i);
         button.append(task_font);
         button.appendChild(button_i);
-        task.append(design);
-        task_content.append(button);
-        task.append(task_content);
+        task_content.append(meaning);
+        word.append(button);
+        task.append(word);
+        // task.append(task_content);
         task_cover.append(task);
         task_contain.append(task_cover);
       }
   
         let TaskC = document.querySelectorAll(".Task");
     TaskC.forEach((Task) => {
-      Task.style.width = window.innerWidth-25 + "px";
+      if(window.innerWidth > 768)
+        Task.style.width = (window.innerWidth/2)-25 + "px";
+      else
+        Task.style.width = (window.innerWidth)-25 + "px";
     });
     let TaskContentC = document.querySelectorAll('.TaskContent');
     TaskContentC.forEach((TaskContent) => {
-      TaskContent.style.width = window.innerWidth-(25+12)+"px";
+      if(window.innerWidth > 768)
+        TaskContent.style.width = (window.innerWidth/2)-(25+12)+"px";
+      else
+        TaskContent.style.width = (window.innerWidth)-(25+12)+"px";
     })
     let TaskFontC = document.querySelectorAll('.TaskFont');
     TaskFontC.forEach((TaskFont) => {
-      TaskFont.style.width = window.innerWidth-(25+12+38)+"px";
+      if(window.innerWidth > 768)
+        TaskFont.style.width = (window.innerWidth/6)-(25+12+38)+"px";
+      else
+        TaskFont.style.width = (window.innerWidth)-(25+12+38)+"px";
     })
   }
     }
@@ -90,6 +113,10 @@ export default class DoIt extends Component {
     task_meaning.className = "TaskMeaning " + i;
     const task_font = document.createElement("p");
     task_font.className = "TaskFont1";
+    if(window.innerWidth > 768)
+      task_font.style.width = (window.innerWidth/2)-(25+12+28)+"px";
+    else
+      task_font.style.width = (window.innerWidth)-(25+12+28)+"px";
     task_font.innerText = arr[i][1];
     task_meaning.append(task_font);
     task_covers[0].append(task_meaning);
@@ -140,13 +167,17 @@ export default class DoIt extends Component {
   setHeight() {
     try {
     let MainPage = document.getElementById("DoItBackground").style;
-    let MainPageC = document.getElementById("DoItContainer").style;
+    // let MainPageC = document.getElementById("DoItContainer").style;
     MainPage.width = window.innerWidth + "px";
     MainPage.height = window.innerHeight + "px";
-    MainPageC.width = window.innerWidth + "px";
+    // MainPageC.width = window.innerWidth + "px";
     let TaskContain = document.getElementById("TaskContain").style;
     TaskContain.height = window.innerHeight - 78 + "px";
-    TaskContain.width = window.innerWidth + "px";
+    if(window.innerWidth <= 768)
+      TaskContain.width = window.innerWidth + "px";
+    else
+      TaskContain.width = window.innerWidth/2 + "px";
+      TaskContain.left = window.innerWidth/4+"px";
     }
     catch {
       ;
@@ -181,26 +212,135 @@ export default class DoIt extends Component {
   }
   }
 
-  async SignUp(event) {
-    event.preventDefault();
-    this.props.navigate("/do-it", true);
-  }
-
-  authenticate() {
-    const form = document.getElementById("SignUp");
-    form.addEventListener("submit", this.SignUp);
-  }
-
   logout() {
+    localStorage.removeItem('Name');
+    localStorage.removeItem('Email');
     this.props.navigate('\sign-in', true);
   }
 
+  setAnimation(element) {
+    element.animationDuration = "0.9s";
+    element.transitionTimingFunction = "ease-in";
+    element.animationFillMode = "both";
+    element.animationName = "fadeIn";
+  }
+
+  clearAnimation(element) {
+    element.animationDuration = "";
+    element.transitionTimingFunction = "";
+    element.animationFillMode = "";
+    element.animationName = "";
+  }
+
+  startScroll(scroll) {
+    const interval = 10;
+    var scrolled = 0;
+    console.log(scroll)
+    const task = document.getElementById("TaskContain");
+    if(scroll > 0) {
+    var id = setInterval(() => {
+        task.scrollBy(0, 10);
+        scrolled += 10
+        if (scrolled >= scroll) {
+            this.stopScroll();
+        }
+    }, interval);
+  }
+  else if(scroll < 0){
+    var id = setInterval(() => {
+      task.scrollBy(0, -10);
+      scrolled -= 10
+      if (scrolled <= scroll) {
+          this.stopScroll();
+      }
+  }, interval);
+  }
+    return id;
+}
+
+stopScroll() {
+    clearInterval(this.state.scrollId);
+}
+
+  searchForWord() {
+    try {
+    const arr = JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary'));
+    const search = document.getElementById('search').value;
+    const task = document.getElementById("TaskContain");
+    for(let i=0;i<arr.length;i++) {
+      if(search.toLowerCase() === arr[i][0].toLowerCase()) {
+        let word = document.getElementById("Task"+i).style;
+        let blocksCount = Math.floor((window.innerHeight - 78)/59);
+        if(((i*59)-task.scrollTop) < 0) {
+          this.scrollActive = 1;
+          this.setState({
+            scrollId: this.startScroll((i*59)-task.scrollTop)
+          });
+        }
+        else {
+          const start = Math.ceil(task.scrollTop/59);
+          const end = blocksCount+start-1;
+          if((i >= start) && (i < end))
+            this.scrollActive = 0;
+          else {
+            this.scrollActive = 1;
+            this.setState({
+              scrollId: this.startScroll(((i+1)*59)-task.scrollTop-(window.innerHeight-78)+8)
+            });
+          }
+        }
+        if(this.scrollActive === 0) {
+        this.setAnimation(word);
+        setTimeout(() => {
+          this.clearAnimation(word);
+        }, 300);
+      }
+      else {
+        setTimeout(() => {
+          this.setAnimation(word);
+        }, 350);
+        setTimeout(() => {
+          this.clearAnimation(word);
+        }, 300);
+      }
+        break;
+      }
+    }
+  }
+  catch {
+    ;
+  }
+  }
+
   componentDidMount() {
-    // if(window.performance.navigation.type !== 0)
-    //   this.props.navigate('\do-it', true);
+    if(window.performance.navigation.type !== 0) {
+      this.props.navigate('\do-it', true);
+    }
     if(localStorage.getItem('Email'))
       this.props.data[1] = localStorage.getItem('Email');
     this.getTasks(this.props.data[1]);
+
+    document.getElementById('search').addEventListener('keyup', (e) => {
+      console.log("hello")
+      let search = document.getElementById('search');
+      if(search.value === "")
+        this.setState({
+          disableButton: true,
+        })
+      else
+        this.setState({
+          disableButton: false,
+        })
+    });
+    
+    window.onpopstate = () => {
+      if(this.props.state.popCount === 0)
+      {
+        this.props.setStateData('popCount', 1);
+        window.history.pushState({}, undefined, "");
+        this.props.navigate(-1, true);
+      }
+    }
   }
 
   render() {
@@ -221,31 +361,38 @@ export default class DoIt extends Component {
           width: window.innerWidth + "px",
         }}
       >
-        {/* {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined} */}
-        <div id="DoItContainer" style={{ width: window.innerWidth + "px" }}>
-          <img src={icon} alt="Icon" id="IconMain"></img>
-          <p
-            id="NameFont"
-            style={{ width: window.innerWidth - (43 + 20 + 45) + "px" }}
-          >
-            Hi {name}
-          </p>
-          <button
-            type="button"
-            id="addIcon"
-            onClick={this.addTask}
-          >
-            {this.state.addActive ? <i className="closeIcon material-icons"></i>: <i className="addIcon material-icons"></i>}
-          </button>
-          <button type="button" id="logout" onClick={this.logout}><i className="logout material-icons"></i></button>
-        </div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  {/* <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button> */}
+  <img src={icon} alt="Icon" id="IconMain"></img>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style={{display: ''}}>
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item active">
+      <p id="NameFont" style={{ width: window.innerWidth - (43 + 20 + 45) + "px" }}>
+        {name}
+      </p>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0" id="searchButton">
+      <input class="form-control mr-sm-2" id="search" type="search" placeholder="Search" aria-label="Search" style={{marginRight: "6px"}} required/>
+      <button class="btn btn-outline-success my-2 my-sm-0" type="button" onClick={this.searchForWord} disabled={this.state.disableButton}>Search</button>
+      <button type="button" id="logout" onClick={this.logout}><i className="logout material-icons"></i></button>
+    </form>
+  </div>
+</nav>
+{this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
         <div
         id="TaskContain"
-        style={{ height: window.innerHeight - 78 + "px", width: window.innerWidth+"px" }}
+        style={{ maxHeight: window.innerHeight - 78 + "px", width: (window.innerWidth <= 768 ? window.innerWidth +"px" : window.innerWidth/2 +"px"), left: (window.innerWidth > 768) ? window.innerWidth/4+"px" : undefined}}
       >
       </div>
         {this.state.addActive === true ? <AddPage setHeight={this.setHeight} state={this.props.state} setData={this.props.setStateData} alertFunc={this.props.alertFunc} active={this.props.active} data={this.props.data}/> : undefined}
       </div>
+      <Fab size="secondary" color="secondary" aria-label="add" onClick={this.addTask}>
+        {this.state.addActive ? <i className="closeIcon material-icons"></i>: <AddIcon />}
+      </Fab>
       </>
     );
   }

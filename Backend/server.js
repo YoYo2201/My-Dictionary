@@ -1,6 +1,6 @@
 const db = require('./db');
 const sendMail = require('./sendMail');
-const auth = require('./routes/auth');
+const auth = require('./routes/auth.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require("cors");
@@ -31,7 +31,7 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.json());
 
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth.js'));
 
 server.listen(PORT, () => {
     console.log("Server Connected!!!");

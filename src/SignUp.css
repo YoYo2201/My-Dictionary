@@ -8,7 +8,7 @@
 
 #DoItBackground{
     position: absolute;
-    background: url('./res/Background.jpg') no-repeat scroll center top transparent;
+    background: url('./res/Background1.jpg') no-repeat scroll center top transparent;
     background-size: cover;
     overflow: hidden;
 }
@@ -131,7 +131,7 @@ color: #FFFFFF;
 
 .signIn-visit{
     padding-left: 10px;
-    color: #FF0000;
+    color: cornflowerblue;
 }
 
 #show-password{

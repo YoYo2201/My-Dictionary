@@ -51,7 +51,7 @@ export default class SignUp extends Component {
         this.props.setStateData('data', {name: name, email: email, password: password, otp: otp});
         this.props.navigate('/otp', false);
       } else if(result.status === "Exists"){
-        this.props.alertFunc('danger', "Username Already Exists!!!");
+        this.props.alertFunc('danger', "Email Already Exists!!!");
       }
       else if(result.status === "error")
         this.props.alertFunc('danger', "Unable to Send OTP!!!");
@@ -160,7 +160,7 @@ export default class SignUp extends Component {
                   />
                 </div>
                 <div className="form">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate}>Register</button>
+                <button type="submit" name="submit" id="submit" class="form-submit btn btn-primary" onClick={this.authenticate}>Register</button>
                 </div>
           </form>
           <div id="linkSignIn">

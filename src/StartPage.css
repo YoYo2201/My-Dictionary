@@ -4,7 +4,7 @@
 
 #startPage1{
     position: absolute;
-    background: url('./res/Background.jpg') no-repeat scroll center top transparent;
+    background: url('./res/Background1.jpg') no-repeat scroll center top transparent;
     background-size: cover;
     overflow: hidden;
 }

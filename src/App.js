@@ -22,6 +22,7 @@ class App extends Component {
       data: null,
       popCount: null,
       dictionary: null,
+      stateShown: false,
     }
     this.handleAlert = this.handleAlert.bind(this);
     this.navigator = this.navigator.bind(this);
@@ -111,6 +112,11 @@ class App extends Component {
     {
       this.setState({
         data: data,   
+      });
+    }
+    else if(element === 'stateShown') {
+      this.setState({
+        stateShown: data,
       });
     }
     else if(element === 'popCount')

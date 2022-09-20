@@ -3,6 +3,7 @@ import './AddPage.css'
 import Alert from './Alert';
 import Spinner from "./Spinner";
 import data from './URL.json'
+import SpinnerVerify from './SpinnerVerify';
 
 export default class AddPage extends Component {
     constructor(props){
@@ -10,6 +11,11 @@ export default class AddPage extends Component {
         this.setHeight = this.setHeight.bind(this);
         this.addPage = this.addPage.bind(this);
         this.authenticate = this.authenticate.bind(this);
+        this.getMeaningAutomatically = this.getMeaningAutomatically.bind(this);
+        this.clearAll = this.clearAll.bind(this);
+        this.state = {
+          spinnerActive: false
+        }
     }
 
     async addPage(event) {
@@ -49,16 +55,66 @@ export default class AddPage extends Component {
         else {
           localStorage.setItem(email+'Dictionary', JSON.stringify(b));
         }
+        let w = document.getElementById('name');
+        let textBox = document.getElementById('description');
+        textBox.value = '';
+        w.value = '';
       } else if(result.status === "Exists"){
         this.props.alertFunc('danger', "Word Already Exists!!!");
+        let w = document.getElementById('name');
+        let textBox = document.getElementById('description');
+        textBox.value = '';
+        w.value = '';
       }
       else if(result.status === "error")
         this.props.alertFunc('danger', "Unable to Add Word!!!");
     }
 
+    async getMeaningAutomatically() {
+      const word = document.getElementById('name').value.toLowerCase();
+      let textBox = document.getElementById('description');
+      textBox.value = '';
+      if(word === "")
+        this.props.alertFunc('danger', "Word cannot be Empty!!!");
+      else {
+      let bg = document.getElementById('DoItBackground').style;
+      const PORT = process.env.PORT || 4000;
+      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/getMeaning' : `${data.URL}:${PORT}/api/auth/getMeaning`
+      this.setState({spinnerActive: true})
+      const result = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          word,
+        }),
+      }).then((res) => res.json());
+
+      this.setState({spinnerActive: false})
+      if (result.status === "error") {
+        this.props.alertFunc('danger', "Unable to get Meaning!!!");
+      }
+      else {
+        for(let i=0;i<result.status.length;i++) {
+          let textBox = document.getElementById('description');
+          textBox.value += `${i+1}. `+result.status[i];
+          textBox.value += '\n';
+        }
+      } 
+    }
+  }
+
     authenticate() {
       const form = document.getElementById('AddTask')
       form.addEventListener('submit', this.addPage)
+    }
+
+    clearAll() {
+      let word = document.getElementById('name');
+      let textBox = document.getElementById('description');
+      textBox.value = '';
+      word.value = '';
     }
 
     componentDidMount() {
@@ -92,7 +148,6 @@ export default class AddPage extends Component {
       <>
       {this.props.state.load && <Spinner/>}
         <div id='AddPageContainer' style={{display: 'block', position: 'absolute', top: '60px'}}>
-        {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
         <p id='AddFont'>Add Word</p>
       <div id='AddPage'>
           <form id="AddTask" autoComplete="off">
@@ -104,6 +159,10 @@ export default class AddPage extends Component {
                     placeholder="Enter the Word"
                     required
                   />
+                  {this.state.spinnerActive === true ? <SpinnerVerify/> : undefined}
+                </div>
+                <div className="AddForm" id="Automated">
+                  <button type="button" id="submit" onClick={this.getMeaningAutomatically} style={{fontSize: "18px"}} className="btn btn-primary">Google Search</button>
                 </div>
                 <div className="AddForm">
                   <textarea
@@ -114,8 +173,9 @@ export default class AddPage extends Component {
                     required
                   />
                 </div>
-                <div className="AddForm">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate}>Add</button>
+                <div className="AddForm" style={{display: 'flex'}}>
+                <button type="submit" name="submit" id="submit" class="form-submit btn btn-primary" onClick={this.authenticate}>Add</button>
+                <button type="button" id="submit" class="form-submit btn btn-primary" onClick={this.clearAll}>Clear All</button>
                 </div>
           </form>
       </div>

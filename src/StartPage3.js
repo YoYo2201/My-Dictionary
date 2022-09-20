@@ -14,7 +14,7 @@ export default class StartPage3 extends Component {
     }
 
     handleClick() {
-        this.props.navigate('/sign-up', true);
+        this.props.navigate('/sign-in', true);
     }
 
   render() {
@@ -33,7 +33,7 @@ export default class StartPage3 extends Component {
         <div id='start3'>
         <p id="startIt" style={{top: '40px'}}>LET'S START!!</p>
         <div id="buttonDiv" style={{ top: window.innerHeight*0.10+"px"}}>
-          <button type='button' id='startButton' onClick={this.handleClick}>
+          <button type='button' id='startButton' class="btn btn-primary" onClick={this.handleClick}>
               <p id='buttonFont'>START</p>
           </button>
         </div>

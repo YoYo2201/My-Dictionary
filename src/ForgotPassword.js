@@ -171,7 +171,7 @@ export default class ForgotPassword extends Component {
                   />
                 </div>
                 <div className="form">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate} disabled={this.state.disable}>Continue</button>
+                <button type="submit" name="submit" id="submit" class="form-submit btn btn-primary" onClick={this.authenticate} disabled={this.state.disable}>Continue</button>
                 </div>
           </form>
           </div>

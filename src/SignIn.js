@@ -14,7 +14,6 @@ export default class SignIn extends Component {
         this.SignIn = this.SignIn.bind(this);
         this.props.setStateData('password', 'visibility')
         this.props.setStateData('confirm-password', 'visibility')
-        // console.log("popCount in SignIn: ", this.props.state.popCount);
     }
 
     async SignIn(event) {
@@ -68,6 +67,7 @@ export default class SignIn extends Component {
     return (
       <>
       {this.props.state.load && <Spinner/>}
+      {localStorage.getItem('stateShown') ? undefined : localStorage.setItem('stateShown', true)}
       <div
         id="DoItBackground"
         style={{
@@ -117,7 +117,7 @@ export default class SignIn extends Component {
                   />
                 </div>
                 <div className="form">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate}>Login</button>
+                <button type="submit" name="submit" id="submit" class="form-submit btn btn-primary" onClick={this.authenticate}>Login</button>
                 </div>
           </form>
           <div id="linkSignIn">

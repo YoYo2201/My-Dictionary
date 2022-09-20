@@ -14,7 +14,6 @@ export default class StartPage extends Component {
     this.setCircleColorByID = this.setCircleColorByID.bind(this);
     this.setAnimation = this.setAnimation.bind(this);
     this.clearAnimation = this.clearAnimation.bind(this);
-    // this.handleGesture = this.handleGesture.bind(this);
     this.touchstartX = 0;
     this.touchendX = 0;
   }
@@ -50,7 +49,7 @@ export default class StartPage extends Component {
     try {
     let circles = document.querySelectorAll(".circle");
     circles.forEach((circle) => {
-      circle.style.backgroundColor = "white";
+      circle.style.backgroundColor = "#606060FF";
       this.clearAnimation(circle);
     });
   }
@@ -70,7 +69,7 @@ export default class StartPage extends Component {
     let circle = document.getElementById(`c${this.state.pageNo}`).style;
     let frame = document.getElementById("frame").style;
     this.setAnimation(circle);
-    circle.backgroundColor = "black";
+    circle.backgroundColor = "#D6ED17FF";
     }
     catch {
       ;
@@ -120,7 +119,8 @@ export default class StartPage extends Component {
 
     return (
       <>
-      {localStorage.getItem('Name') ? <Navigate to='/do-it' /> : undefined}
+      {localStorage.getItem('Name') ? <Navigate to='/do-it' replace={true}/> : undefined}
+      {localStorage.getItem('stateShown') ? <Navigate to='/sign-in' replace={true}/> : undefined}
       <div
         id="start"
         style={{
@@ -167,9 +167,9 @@ export default class StartPage extends Component {
             <div
               className="circle"
               id="c1"
-              style={{ backgroundColor: "black" }}
+              style={{ backgroundColor: "#D6ED17FF" }}
             ></div>
-            <div className="circle" id="c2"></div>
+            <div className="circle" id="c2" style={{backgroundColor: "#606060FF"}}></div>
           </div>
         </div>
       </div>

@@ -3,6 +3,8 @@ const db = require('../db');
 const mail = require('../sendMail');
 const bcrypt = require("bcryptjs");
 const router = express.Router();
+const axios = require('axios');
+const cheerio = require('cheerio');
 const JWT_SECRET = "sdjkfh8923yhjdksbfma@#*(&@*!^#&@bhjb2qiuhesdbhjdsfg839ujkdhfjk";
 
 const Collection1 = db.collection("USER");
@@ -14,7 +16,11 @@ router.post('/sendOTP', async (req, res) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", true);
 
-  const getUser = await Collection1.doc(email).get();
+  const getUser = await Collection1.doc(email).get().then(documentSnapshot => {
+    let isStore = documentSnapshot.get();
+    console.log(isStore);
+    // Value of isStore here ... 
+  });;
   if (getUser.exists) res.json({ status: "Exists" });
   else {
     mail.setConfiguration(email, name, otp);
@@ -43,6 +49,7 @@ router.post("/signUp", async(req, res) => {
 
 router.post("/signIn", async (req, res) => {
   const { email, password } = req.body;
+  console.log(email)
   const user = await Collection1.doc(email).get();
   res.header("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -131,6 +138,41 @@ router.post("/getDictionary", async(req, res) => {
   else {
     res.json({ status: "error"});
   }
+});
+
+router.post("/getMeaning", async(req, res) => {
+  const {word} = req.body;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+
+  try {
+    const targetUrl = "https://www.oxfordlearnersdictionaries.com/definition/english/"+word;
+    const arr = [];
+    (async() => {
+      try {
+      const response = await axios.get(targetUrl);
+    const $ = cheerio.load(response.data);
+    $("span.def")
+  .each((row, elem) => {
+    if((row === 0) || (row === 1)) {
+          const key = $(elem).text().trim();
+          arr[row] = key;
+      return;
+  }
+  });
+  res.json({ status: arr })
+}
+catch{
+  res.json({ status: "error"});
+}
+  })()
+}
+catch (error){
+  res.json({ status: "error"});
+}
+
 });
 
 module.exports = router;

@@ -130,7 +130,7 @@ export default class ChangePassword extends Component {
                   />
                 </div>
                 <div className="form">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate}>Confirm</button>
+                <button type="submit" name="submit" id="submit" class="form-submit btn btn-primary" onClick={this.authenticate}>Confirm</button>
                 </div>
           </form>
           </div>

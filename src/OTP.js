@@ -153,7 +153,7 @@ export default class OTP extends Component {
                   />
                 </div>
                 <div className="form">
-                <button type="submit" name="submit" id="submit" class="form-submit" onClick={this.authenticate}>Verify</button>
+                <button type="submit" name="submit" id="submit" class="form-submit btn btn-primary" onClick={this.authenticate}>Verify</button>
                 </div>
           </form>
           <div id="linkSignIn">
