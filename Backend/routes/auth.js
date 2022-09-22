@@ -16,11 +16,7 @@ router.post('/sendOTP', async (req, res) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", true);
 
-  const getUser = await Collection1.doc(email).get().then(documentSnapshot => {
-    let isStore = documentSnapshot.get();
-    console.log(isStore);
-    // Value of isStore here ... 
-  });;
+  const getUser = await Collection1.doc(email).get();
   if (getUser.exists) res.json({ status: "Exists" });
   else {
     mail.setConfiguration(email, name, otp);

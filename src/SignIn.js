@@ -59,10 +59,18 @@ export default class SignIn extends Component {
     }
 
     componentDidMount() {
+      // window.addEventListener("resize", this.props.setHeight);
         this.props.alignForm();
         let SignUpC = document.getElementById('SignUpContainer').style;
         SignUpC.height = window.innerHeight - 60 - ((window.innerHeight/5)+72) + "px";
     }
+
+    // componentDidMount() {
+    //   window.addEventListener('resize', this.updateDimensions);
+    // }
+    // componentWillUnmount() {
+    //   window.addEventListener("resize", this.props.setHeight);
+    // }
   render() {
     window.addEventListener("resize", this.props.setHeight);
     if(localStorage.getItem('Email'))
