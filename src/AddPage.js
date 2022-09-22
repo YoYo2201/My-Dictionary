@@ -20,7 +20,7 @@ export default class AddPage extends Component {
 
     async addPage(event) {
       event.preventDefault();
-      const word = document.getElementById('name').value;
+      const word = document.getElementById('name').value.toLowerCase();
       const meaning = document.getElementById('description').value;
       const email = this.props.data[1];
 
@@ -99,7 +99,7 @@ export default class AddPage extends Component {
         for(let i=0;i<result.status.length;i++) {
           let textBox = document.getElementById('description');
           textBox.value += `${i+1}. `+result.status[i];
-          textBox.value += '\n';
+          textBox.value += '\n\n';
         }
       } 
     }
@@ -144,6 +144,13 @@ export default class AddPage extends Component {
 
   render() {
     window.addEventListener("resize", this.setHeight);
+    try {
+      let taskContainer = document.getElementById('TaskContainer');
+      taskContainer.style.display = 'none';
+    }
+    catch {
+      ;
+    }
     return (
       <>
       {this.props.state.load && <Spinner/>}

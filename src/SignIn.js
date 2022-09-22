@@ -20,6 +20,7 @@ export default class SignIn extends Component {
       event.preventDefault();
       const email = document.getElementById('email').value.toLowerCase();
       const password = document.getElementById('password').value;
+
       let bg = document.getElementById('DoItBackground').style;
       this.props.setStateData('load', true);
       bg.filter = 'blur(2px)';
@@ -39,12 +40,12 @@ export default class SignIn extends Component {
       this.props.setStateData('load', false);
       bg.filter = '';
       if (result.status === "ok") {
-        this.props.alertFunc('success', 'Logged In Successfully!!!');
+        setTimeout(() => {
+          this.props.alertFunc('success', 'Logged In Successfully!!!');
         this.props.data[0] = result.name;
         this.props.data[1] = email;
         localStorage.setItem('Name', this.props.data[0]);
         localStorage.setItem('Email', this.props.data[1]);
-        setTimeout(() => {
           this.props.navigate('/do-it', true)
         }, 1000);
       } else {
@@ -64,6 +65,8 @@ export default class SignIn extends Component {
     }
   render() {
     window.addEventListener("resize", this.props.setHeight);
+    if(localStorage.getItem('Email'))
+      this.props.navigate('/do-it', true);
     return (
       <>
       {this.props.state.load && <Spinner/>}

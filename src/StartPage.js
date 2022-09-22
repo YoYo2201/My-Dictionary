@@ -119,8 +119,7 @@ export default class StartPage extends Component {
 
     return (
       <>
-      {localStorage.getItem('Name') ? <Navigate to='/do-it' replace={true}/> : undefined}
-      {localStorage.getItem('stateShown') ? <Navigate to='/sign-in' replace={true}/> : undefined}
+      {localStorage.getItem('Email') ? <Navigate to='/do-it' replace={true}/> : localStorage.getItem('stateShown') ? <Navigate to='/sign-in' replace={true}/> : undefined}
       <div
         id="start"
         style={{
