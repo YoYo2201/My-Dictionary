@@ -39,7 +39,7 @@
     "node": "v14.7.0"
   },
   "scripts": {
-    "start": "node Backend/server.js",
+    "start": "react-scripts start",
     "build": "CI=false && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
