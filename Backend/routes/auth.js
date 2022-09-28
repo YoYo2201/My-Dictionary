@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../db');
+const { encrypt, decrypt } = require('./crypto');
 const mail = require('../sendMail');
 const bcrypt = require("bcryptjs");
 const router = express.Router();
@@ -32,8 +33,9 @@ router.post("/signUp", async(req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
 
   const pass = await bcrypt.hash(password, 10);
+  const n = encrypt(name);
     const user = await Collection1.doc(email).set({
-      Name: name,
+      Name: n,
       Password: pass,
     });
     if (user) {
@@ -45,7 +47,6 @@ router.post("/signUp", async(req, res) => {
 
 router.post("/signIn", async (req, res) => {
   const { email, password } = req.body;
-  console.log(email)
   const user = await Collection1.doc(email).get();
   res.header("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -57,7 +58,7 @@ router.post("/signIn", async (req, res) => {
   else
   {
     if (await bcrypt.compare(password, user.data().Password)) {
-      return res.json({ status: "ok", name: user.data().Name });
+      return res.json({ status: "ok", name: decrypt(user.data().Name) });
     }
     else
       res.json({ status: "error", error: "Invalid username/password" });
@@ -75,7 +76,7 @@ const getUser = await Collection1.doc(email).get();
 if (!getUser.exists) res.json({ status: "Not Exists" });
 else {
   mail.setConfigurationForReset(email, otp);
-  mail.sendMail1(getUser.data().Name, res);
+  mail.sendMail1(decrypt(getUser.data().Name), res);
 }
 })
 
@@ -87,8 +88,9 @@ router.post("/changePassword", async(req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
 
   const pass = await bcrypt.hash(password, 10);
+  const n = encrypt(name);
     const user = await Collection1.doc(email).set({
-      Name: name,
+      Name: n,
       Password: pass,
     });
     if (user) {
@@ -99,25 +101,79 @@ router.post("/changePassword", async(req, res) => {
 });
 
 router.post("/addPage", async(req, res) => {
+  try {
   const {email, word, meaning} = req.body;
   res.header("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", true);
 
-  const user = await Collection1.doc(email).collection('DICTIONARY').doc(word).get();
-    if (user.exists) {
+  const user = await Collection1.doc(email).collection('DICTIONARY').get();
+  var exists = 0;
+  user.docs.forEach(doc => {
+    var document = decrypt(doc.data().Word);
+    if((document.toLowerCase() === word.toLowerCase()) && (exists === 0)) {
+      exists = 1;
+    }
+  })
+    if (exists === 1) {
       res.json({ status: "Exists" });
     }
     else {
-      const add = await Collection1.doc(email).collection('DICTIONARY').doc(word).set({
-        Meaning: meaning,
+      const mean = encrypt(meaning);
+      const words = encrypt(word);
+      const add = await Collection1.doc(email).collection('DICTIONARY').doc(encrypt(word).content).set({
+        Word: words,
+        Meaning: mean,
       });
       if(add)
         res.json({ status: "ok" });
       else
         res.json({ status: "error" });
     }
+  }
+  catch (error) {
+    console.log(error)
+    res.json({ status: "error" });
+  }
+});
+
+router.post("/addDoc", async(req, res) => {
+  try {
+  const {email, word, meaning} = req.body;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+
+  const user = await Collection1.doc(email).collection('DOCUMENT').get();
+  var exists = 0;
+  user.docs.forEach(doc => {
+    var document = decrypt(doc.data().Word);
+    if((document.toLowerCase() === word.toLowerCase()) && (exists === 0)) {
+      exists = 1;
+    }
+  })
+    if (exists === 1) {
+      res.json({ status: "Exists" });
+    }
+    else {
+      const mean = encrypt(meaning);
+      const words = encrypt(word);
+      const add = await Collection1.doc(email).collection('DOCUMENT').doc(encrypt(word).content).set({
+        Word: words,
+        Meaning: mean,
+      });
+      if(add)
+        res.json({ status: "ok" });
+      else
+        res.json({ status: "error" });
+    }
+  }
+  catch (error) {
+    console.log(error)
+    res.json({ status: "error" });
+  }
 });
 
 router.post("/getDictionary", async(req, res) => {
@@ -128,8 +184,9 @@ router.post("/getDictionary", async(req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
 
   const dict = await Collection1.doc(email).collection('DICTIONARY').get();
-  if(dict) {
-    res.json({ status: dict.docs.map(doc => [doc.id, doc.data().Meaning])});
+  const document = await Collection1.doc(email).collection('DOCUMENT').get();
+  if(dict && document) {
+    res.json({ status: "ok", dict: dict.docs.map(doc => [decrypt(doc.data().Word), decrypt(doc.data().Meaning)]), document: document.docs.map(doc => [decrypt(doc.data().Word), decrypt(doc.data().Meaning)])});
   }
   else {
     res.json({ status: "error"});
@@ -144,21 +201,35 @@ router.post("/getMeaning", async(req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
 
   try {
-    const targetUrl = "https://www.oxfordlearnersdictionaries.com/definition/english/"+word;
+    // const targetUrl = "https://www.oxfordlearnersdictionaries.com/definition/english/"+word;
+    const targetUrl = "https://dictionary.cambridge.org/dictionary/english/"+word;
     const arr = [];
     (async() => {
       try {
       const response = await axios.get(targetUrl);
     const $ = cheerio.load(response.data);
-    $("span.def")
+  //   $("span.def")
+  // .each((row, elem) => {
+  //   if((row === 0) || (row === 1)) {
+  //         const key = $(elem).text().trim();
+  //         arr[row] = key;
+  //     return;
+  // }
+  // });
+  $("div.ddef_d")
   .each((row, elem) => {
     if((row === 0) || (row === 1)) {
-          const key = $(elem).text().trim();
+          var key = $(elem).text().trim();
+          if(key[key.length-1] == ':')
+            key = key.slice(0, key.length-1);
           arr[row] = key;
       return;
   }
   });
-  res.json({ status: arr })
+  if(arr.length !== 0)
+    res.json({ status: arr })
+  else
+    res.json({ status: "error"});  
 }
 catch{
   res.json({ status: "error"});

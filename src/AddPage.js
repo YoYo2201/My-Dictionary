@@ -14,19 +14,28 @@ export default class AddPage extends Component {
         this.getMeaningAutomatically = this.getMeaningAutomatically.bind(this);
         this.clearAll = this.clearAll.bind(this);
         this.state = {
-          spinnerActive: false
+          spinnerActive: false,
         }
     }
 
     async addPage(event) {
       event.preventDefault();
-      const word = document.getElementById('name').value.toLowerCase();
+      const word = document.getElementById('name').value;
       const meaning = document.getElementById('description').value;
       const email = this.props.data[1];
+      if(this.props.dictionaryActive) {
+        var mode = 'Dictionary';
+      }
+      else {
+        var mode = 'Document';
+      }
 
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
-      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/addPage' : `${data.URL}:${PORT}/api/auth/addPage`
+      if(this.props.dictionaryActive)
+        var url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/addPage' : `${data.URL}:${PORT}/api/auth/addPage`
+      else
+        var url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/addDoc' : `${data.URL}:${PORT}/api/auth/addDoc`
       bg.filter = 'blur(2px)';
       this.props.setData('load', true);
       const result = await fetch(url, {
@@ -37,7 +46,7 @@ export default class AddPage extends Component {
         body: JSON.stringify({
           email,
           word,
-          meaning
+          meaning,
         }),
       }).then((res) => res.json());
 
@@ -46,14 +55,15 @@ export default class AddPage extends Component {
       if (result.status === "ok") {
         this.props.alertFunc('success', 'Word Added Successfully!!!');
         var a = [word, meaning];
-        var b = JSON.parse(localStorage.getItem(email+'Dictionary'));
+        console.log(mode)
+        var b = JSON.parse(localStorage.getItem(email+mode));
         b.splice(b.length, 0, a);
         if(!b) {
-          localStorage.setItem(email+'Dictionary', JSON.stringify(a));
+          localStorage.setItem(email+mode, JSON.stringify(a));
           this.props.active[1] = true;
         }
         else {
-          localStorage.setItem(email+'Dictionary', JSON.stringify(b));
+          localStorage.setItem(email+mode, JSON.stringify(b));
         }
         let w = document.getElementById('name');
         let textBox = document.getElementById('description');
@@ -107,7 +117,7 @@ export default class AddPage extends Component {
 
     authenticate() {
       const form = document.getElementById('AddTask')
-      form.addEventListener('submit', this.addPage)
+      form.addEventListener('submit', this.addPage);
     }
 
     clearAll() {
@@ -157,7 +167,7 @@ export default class AddPage extends Component {
         <div id='AddPageContainer' style={{display: 'block', position: 'absolute', top: '60px'}}>
         <p id='AddFont'>Add Word</p>
       <div id='AddPage'>
-          <form id="AddTask" autoComplete="off">
+          <form id="AddTask" onsubmit="event.preventDefault()" autoComplete="off">
           <div className="AddForm">
                   <input
                     type="text"

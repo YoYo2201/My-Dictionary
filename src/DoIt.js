@@ -26,27 +26,32 @@ export default class DoIt extends Component {
     this.startScroll = this.startScroll.bind(this);
     this.stopScroll = this.stopScroll.bind(this);
     this.props.setStateData('popCount', 0);
+    this.switch = this.switch.bind(this);
+    this.searchingActive = this.searchingActive.bind(this);
+    this.closeBox = this.closeBox.bind(this);
+    this.removeElementFromClass = this.removeElementFromClass.bind(this);
     this.state = {
       addActive: false,
       scrollId: null,
       disableButton: true,
       AddButtonDisable: true,
       searchSymbol: null,
+      dictionaryActive: true,
     }
     this.scrollActive = 0;
     // this.searchSymbol = null;
   }
 
-  displayDictionary() {
+  displayDictionary(page) {
     try {
     if(this.props.active[1] === true) {
       const taskContain = document.getElementById("TaskContain");
-      if(JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary')).length) {
+      if(JSON.parse(localStorage.getItem(this.props.data[1]+page)).length) {
         taskContain.style.display = 'grid';
       }
       else
         taskContain.style.display = 'none';
-      const arr = JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary'));
+      const arr = JSON.parse(localStorage.getItem(this.props.data[1]+page));
       for(let i=0;i<arr.length;i++) {
         const card = document.createElement("div");
         const box = document.createElement("div");
@@ -164,11 +169,14 @@ export default class DoIt extends Component {
       this.props.active[0] = true;
     }
     else {
-      localStorage.setItem(email+'Dictionary', JSON.stringify(result.status));
+      localStorage.setItem(email+'Dictionary', JSON.stringify(result.dict));
+      localStorage.setItem(email+'Document', JSON.stringify(result.document));
       this.props.active[1] = true;
       this.props.active[0] = true;
-      this.removeDictionary();
-      this.displayDictionary();
+      this.removeDictionary('Dictionary');
+      // this.removeDictionary('Document');
+      this.displayDictionary('Dictionary');
+      // this.displayDictionary('Document');
     }
     this.setState({
       AddButtonDisable: false,
@@ -176,9 +184,9 @@ export default class DoIt extends Component {
   }
 
 
-  removeDictionary() {
+  removeDictionary(element) {
     try {
-    const arr = JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary'));
+    const arr = JSON.parse(localStorage.getItem(this.props.data[1]+element));
     for(let i=0;i<arr.length;i++) {
       let card = document.querySelectorAll('.card');
       card.forEach((Card) => {
@@ -197,13 +205,23 @@ export default class DoIt extends Component {
       document.getElementById('TaskContainer').style.display = "block";
       this.setState({
         addActive: false,
-      }, this.displayDictionary)
+      }, () => {
+        if(this.state.dictionaryActive)
+          this.displayDictionary('Dictionary')
+        else
+          this.displayDictionary('Document');
+      })
     }
     else
     {
     this.setState({
       addActive: true,
-    }, this.removeDictionary)
+    }, () => {
+      if(this.state.dictionaryActive)
+        this.removeDictionary('Dictionary')
+      else
+        this.removeDictionary('Document');
+    })
   }
   }
 
@@ -211,6 +229,7 @@ export default class DoIt extends Component {
     localStorage.removeItem('Name');
     localStorage.removeItem('Email');
     localStorage.removeItem(this.props.data[1]+'Dictionary');
+    localStorage.removeItem(this.props.data[1]+'Document');
     this.props.navigate('\sign-in', true);
   }
 
@@ -269,7 +288,11 @@ stopScroll(word, card) {
 
   searchForWord() {
     try {
-    const arr = JSON.parse(localStorage.getItem(this.props.data[1]+'Dictionary'));
+      if(this.state.dictionaryActive)
+        var page = 'Dictionary';
+      else
+        var page = 'Document';
+    const arr = JSON.parse(localStorage.getItem(this.props.data[1]+page));
     const search = document.getElementById('search').value;
     const task = document.getElementById("TaskContain");
     var row = 0;
@@ -325,6 +348,123 @@ stopScroll(word, card) {
   }
   }
 
+  closeBox() {
+    try {
+    const docs = document.querySelectorAll(".suggestionBox");
+    docs.forEach(doc => {
+      doc.remove();
+    })
+  }
+  catch {
+    ;
+  }
+  }
+
+  removeElementFromClass(elem, currFocus) {
+    try {
+      elem[currFocus].classList.remove("elementActive");
+    }
+    catch{
+      ;
+    }
+  }
+
+  searchingActive() {
+    var currFocus = -1;
+    document.getElementById("search").addEventListener("input", () => {
+      this.setHeight();
+    try {
+      if(this.state.dictionaryActive)
+        var page = 'Dictionary';
+      else
+        var page = 'Document';
+    this.closeBox();
+    const arr = JSON.parse(localStorage.getItem(this.props.data[1]+page));
+    const search = document.getElementById('search');
+    const inputContainer = document.getElementById("inputContainer");
+
+    if(search.value.length === 0)
+      this.closeBox();
+    var box = document.createElement("div");
+    box.className = "suggestionBox";
+    box.id = "suggest";
+    inputContainer.append(box);
+    var found = false;
+    for(let i=0;i<arr.length;i++) {
+      if(arr[i][0].substr(0, search.value.length).toLowerCase() === search.value.toLowerCase()) {
+        found = true;
+        let element = document.createElement("div");
+        element.className = "searchElements";
+        element.innerHTML = "<strong>" + arr[i][0].substr(0, search.value.length) + "</strong>" + arr[i][0].substr(search.value.length, arr[i][0].length);
+
+        element.addEventListener("click", () => {
+          search.value = arr[i][0];
+          this.closeBox();
+        });
+        box.append(element);
+      }
+    }
+    if(!found) {
+      let element = document.createElement("div");
+      element.className = "searchElements";
+      element.innerHTML = "<strong>Not Found</strong>";
+      box.append(element);
+    }
+    try {
+      if(window.innerWidth <= 768)
+        box.style.left = "36px";
+      else
+        box.style.left = 0;
+    }
+    catch {
+      ;
+    }
+    if(search.value.length === 0)
+      this.closeBox();
+    }
+    catch {
+      ;
+    }
+  })
+
+  document.getElementById("search").addEventListener("keydown", (e) => {
+    try {
+      let search = document.getElementById('search');
+      if(search.value === "")
+        this.setState({
+          disableButton: true,
+        })
+      else
+        this.setState({
+          disableButton: false,
+        })
+    var elem = document.querySelectorAll(".searchElements");
+    if(e.key === "ArrowDown") {
+      this.removeElementFromClass(elem, currFocus);
+      currFocus += 1;
+      if(currFocus > elem.length-1)
+        currFocus = 0;
+      elem[currFocus].classList.add("elementActive");
+    }
+    else if(e.key === "ArrowUp") {
+      this.removeElementFromClass(elem, currFocus);
+        currFocus -= 1;
+        if(currFocus < 0)
+          currFocus = elem.length-1;
+        elem[currFocus].classList.add("elementActive");
+    }
+    else if(e.key === "Enter") {
+      e.preventDefault();
+      elem[currFocus].click();
+    }
+  }
+  catch {
+    ;
+  }
+  })
+}
+
+
   componentDidMount() {
     if(window.performance.navigation.type !== 0) {
       if(localStorage.getItem('Email')) {
@@ -341,17 +481,22 @@ stopScroll(word, card) {
     else
       this.props.navigate('/', true);
 
-    document.getElementById('search').addEventListener('keyup', (e) => {
-      let search = document.getElementById('search');
-      if(search.value === "")
-        this.setState({
-          disableButton: true,
-        })
-      else
-        this.setState({
-          disableButton: false,
-        })
-    });
+    // const inp = document.getElementById('search');
+    // inp.addEventListener("keydown", this.setHeight);
+    // inp.addEventListener('keyup', (e) => {
+    //   let search = document.getElementById('search');
+    //   if(search.value === "")
+    //     this.setState({
+    //       disableButton: true,
+    //     })
+    //   else
+    //     this.setState({
+    //       disableButton: false,
+    //     })
+    // });
+
+    this.searchingActive();
+
 
     const TaskContainer = document.getElementById("TaskContainer").style;
     const TaskContain = document.getElementById('TaskContain').style;
@@ -364,31 +509,85 @@ stopScroll(word, card) {
       this.setState({searchSymbol: true});
     if(window.innerWidth <= 490) {
       TaskContainer.maxWidth = window.innerWidth+"px"
+      TaskContainer.position = 'absolute';
       TaskContain.width = TaskContainer.maxWidth;
-      TaskContain.top = "20px";
+      TaskContainer.top = "123px";
+      TaskContain.top = "0px";
       TaskContain.maxHeight = (window.innerHeight - 100) + "px";
+      try {
+        let suggest = document.getElementById("suggest").style;
+        suggest.left = "36px";
+      }
+      catch {
+        ;
+      }
     }
     else if((window.innerWidth > 490) && (window.innerWidth <= 768)) {
       TaskContain.width = window.innerWidth + "px";
       TaskContainer.maxWidth = window.innerWidth+"px"
-      TaskContain.top = "20px";
+      TaskContainer.position = 'absolute';
+      TaskContainer.top = "123px";
+      TaskContain.top = "0px";
       TaskContain.maxHeight = (window.innerHeight - 100)+"px";
+      try {
+        let suggest = document.getElementById("suggest").style;
+        suggest.left = "36px";
+      }
+      catch {
+        ;
+      }
     }
     else if((window.innerWidth > 768) && (window.innerWidth <= 840)) {
       TaskContainer.maxWidth = window.innerWidth/1.3+"px"
+      TaskContainer.position = 'relative';
+      TaskContainer.top = "0px";
       TaskContain.width = TaskContainer.maxWidth;
+      try {
+        let suggest = document.getElementById("suggest").style;
+        suggest.left = "0px";
+      }
+      catch {
+        ;
+      }
     }
     else if((window.innerWidth > 840) && (window.innerWidth <= 920)) {
+      TaskContainer.position = 'relative';
+      TaskContainer.top = "0px";
       TaskContainer.maxWidth = window.innerWidth/1.5+"px"
       TaskContain.width = TaskContainer.maxWidth;
+      try {
+        let suggest = document.getElementById("suggest").style;
+        suggest.left = "0px";
+      }
+      catch {
+        ;
+      }
     }
     else if((window.innerWidth > 920) && (window.innerWidth <= 1440)) {
+      TaskContainer.position = 'relative';
+      TaskContainer.top = "0px";
       TaskContainer.maxWidth = window.innerWidth/1.7+"px"
       TaskContain.width = TaskContainer.maxWidth;
+      try {
+        let suggest = document.getElementById("suggest").style;
+        suggest.left = "0px";
+      }
+      catch {
+        ;
+      }
     }
     else {
+      TaskContainer.position = 'relative';
+      TaskContainer.top = "0px";
       TaskContainer.maxWidth = window.innerWidth/1.9+"px"
       TaskContain.width = TaskContainer.maxWidth;
+      try {
+        let suggest = document.getElementById("suggest").style;
+        suggest.left = "0px";
+      }
+      catch {
+        ;
+      }
     }
     
     window.onpopstate = () => {
@@ -397,6 +596,42 @@ stopScroll(word, card) {
         this.props.setStateData('popCount', 1);
         window.history.pushState({}, undefined, "");
         this.props.navigate(-1, true);
+      }
+    }
+  }
+
+  switch() {
+    const sw = document.getElementById("MainSwitch");
+    const span = document.getElementById("spanning").style;
+    const font = document.getElementsByClassName("MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-9l3uo3");
+    const search = document.getElementById("search");
+    this.closeBox();
+    search.value = "";
+    if(sw.className === "MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary Mui-checked css-1nobdqi") {
+      span.borderRadius = "13px";
+      span.backgroundColor = "rgb(0, 0, 255)";
+      span.opacity = 1;
+      span.transition = "background-color 500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms";
+      font[0].style.color = "rgb(0, 0, 255)";
+      font[1].style.color = "white";
+      sw.className = "MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary css-1nobdqi";
+      this.setState({dictionaryActive: false})
+      if(!this.state.addActive) {
+        this.removeDictionary('Dictionary');
+        this.displayDictionary('Document');
+      }
+    }
+    else {
+      span.backgroundColor = "rgb(46, 202, 69)";
+      span.opacity = 1;
+      span.border = '0px none';
+      font[0].style.color = "white";
+      font[1].style.color = "rgb(46, 202, 69)";
+      sw.className = "MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary Mui-checked css-1nobdqi";
+      this.setState({dictionaryActive: true})
+      if(!this.state.addActive) {
+        this.removeDictionary('Document');
+        this.displayDictionary('Dictionary');
       }
     }
   }
@@ -418,34 +653,88 @@ stopScroll(word, card) {
     else
       this.setState({searchSymbol: true});
 
-    if(window.innerWidth <= 490) {
-      TaskContainer.maxWidth = window.innerWidth+"px"
-      TaskContain.width = window.innerWidth+"px";
-      TaskContain.top = "20px";
-      TaskContain.maxHeight = (window.innerHeight - 100) + "px";
-    }
-    else if((window.innerWidth > 490) && (window.innerWidth <= 768)) {
-      TaskContain.width = window.innerWidth + "px";
-      TaskContainer.maxWidth = window.innerWidth+"px"
-      TaskContain.top = "20px";
-      TaskContain.maxHeight = (window.innerHeight - 100)+"px";
-    }
-    else if((window.innerWidth > 768) && (window.innerWidth <= 840)) {
-      TaskContainer.maxWidth = window.innerWidth/1.3+"px"
-      TaskContain.width = TaskContainer.maxWidth;
-    }
-    else if((window.innerWidth > 840) && (window.innerWidth <= 920)) {
-      TaskContainer.maxWidth = window.innerWidth/1.5+"px"
-      TaskContain.width = TaskContainer.maxWidth;
-    }
-    else if((window.innerWidth > 920) && (window.innerWidth <= 1440)) {
-      TaskContainer.maxWidth = window.innerWidth/1.7+"px"
-      TaskContain.width = TaskContainer.maxWidth;
-    }
-    else {
-      TaskContainer.maxWidth = window.innerWidth/1.9+"px"
-      TaskContain.width = TaskContainer.maxWidth;
-    }
+      if(window.innerWidth <= 490) {
+        TaskContainer.maxWidth = window.innerWidth+"px"
+        TaskContainer.position = 'absolute';
+        TaskContain.width = TaskContainer.maxWidth;
+        TaskContainer.top = "123px";
+        TaskContain.top = "0px";
+        TaskContain.maxHeight = (window.innerHeight - 100) + "px";
+        try {
+          let suggest = document.getElementById("suggest").style;
+          suggest.left = "36px";
+        }
+        catch {
+          ;
+        }
+      }
+      else if((window.innerWidth > 490) && (window.innerWidth <= 768)) {
+        TaskContain.width = window.innerWidth + "px";
+        TaskContainer.maxWidth = window.innerWidth+"px"
+        TaskContainer.position = 'absolute';
+        TaskContainer.top = "123px";
+        TaskContain.top = "0px";
+        TaskContain.maxHeight = (window.innerHeight - 100)+"px";
+        try {
+          let suggest = document.getElementById("suggest").style;
+          suggest.left = "36px";
+        }
+        catch {
+          ;
+        }
+      }
+      else if((window.innerWidth > 768) && (window.innerWidth <= 840)) {
+        TaskContainer.maxWidth = window.innerWidth/1.3+"px"
+        TaskContainer.position = 'relative';
+        TaskContainer.top = "0px";
+        TaskContain.width = TaskContainer.maxWidth;
+        try {
+          let suggest = document.getElementById("suggest").style;
+          suggest.left = "0px";
+        }
+        catch {
+          ;
+        }
+      }
+      else if((window.innerWidth > 840) && (window.innerWidth <= 920)) {
+        TaskContainer.position = 'relative';
+        TaskContainer.top = "0px";
+        TaskContainer.maxWidth = window.innerWidth/1.5+"px"
+        TaskContain.width = TaskContainer.maxWidth;
+        try {
+          let suggest = document.getElementById("suggest").style;
+          suggest.left = "0px";
+        }
+        catch {
+          ;
+        }
+      }
+      else if((window.innerWidth > 920) && (window.innerWidth <= 1440)) {
+        TaskContainer.position = 'relative';
+        TaskContainer.top = "0px";
+        TaskContainer.maxWidth = window.innerWidth/1.7+"px"
+        TaskContain.width = TaskContainer.maxWidth;
+        try {
+          let suggest = document.getElementById("suggest").style;
+          suggest.left = "0px";
+        }
+        catch {
+          ;
+        }
+      }
+      else {
+        TaskContainer.position = 'relative';
+        TaskContainer.top = "0px";
+        TaskContainer.maxWidth = window.innerWidth/1.9+"px"
+        TaskContain.width = TaskContainer.maxWidth;
+        try {
+          let suggest = document.getElementById("suggest").style;
+          suggest.left = "0px";
+        }
+        catch {
+          ;
+        }
+      }
   }
     catch {
       ;
@@ -490,8 +779,10 @@ stopScroll(word, card) {
       </p>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0" id="searchButton">
+    <form class="form-inline my-2 my-lg-0" id="searchButton" autoComplete="off">
+      <div id="inputContainer">
       <input class="form-control mr-sm-2" id="search" type="search" placeholder="Search" aria-label="Search" style={{marginRight: (window.innerWidth <= 768 ? "27px" : "6px")}} required/>
+      </div>
       {!this.state.searchSymbol && <button class=" Searching btn btn-outline-success my-2 my-sm-0" type="button" onClick={this.searchForWord} disabled={this.state.disableButton}>Search</button>}
       {this.state.searchSymbol && <button type="button" disabled={this.state.disableButton} onClick={this.searchForWord} className="Searching searchIcon"><span class="material-symbols-outlined">search</span></button>}
       <button type="button" id="logout" onClick={this.logout}><i className="logout material-icons"></i></button>
@@ -499,6 +790,17 @@ stopScroll(word, card) {
   </div>
 </nav>
 {this.props.state.alert !== null ? <Alert alert={this.props.state.alert}/> : undefined}
+<label class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-kswqkt">
+<span class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-9l3uo3" style={{color: 'white'}}>Documents</span>
+<span class="MuiSwitch-root MuiSwitch-sizeMedium css-4pp1z">
+  <span class="MuiButtonBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary PrivateSwitchBase-root MuiSwitch-switchBase MuiSwitch-colorPrimary Mui-checked css-1nobdqi" id="MainSwitch">
+    <input class="PrivateSwitchBase-input MuiSwitch-input css-1m9pwf3" type="checkbox" checked="" onClick={this.switch}/>
+      <span class="MuiSwitch-thumb css-19gndve"></span>
+      </span>
+      <span class="MuiSwitch-track css-g5sy4h" id="spanning"></span>
+        </span>
+        <span class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-9l3uo3" style={{color: 'rgb(46, 202, 69)'}}>Dictionary</span>
+        </label>
 <section id="TaskContainer">
   <div style={{display: 'flex'}}>
         <div
@@ -510,7 +812,7 @@ stopScroll(word, card) {
       </div>
       </div>
       </section>
-        {this.state.addActive === true ? <AddPage setHeight={this.setHeight} state={this.props.state} setData={this.props.setStateData} alertFunc={this.props.alertFunc} active={this.props.active} data={this.props.data}/> : undefined}
+        {this.state.addActive === true ? <AddPage setHeight={this.setHeight} state={this.props.state} setData={this.props.setStateData} alertFunc={this.props.alertFunc} active={this.props.active} data={this.props.data} dictionaryActive={this.state.dictionaryActive}/> : undefined}
       </div>
       <button class="MuiButtonBase-root MuiFab-root MuiFab-circular MuiFab-sizeSecondary MuiFab-secondary css-1efuce" id="AddButton" tabindex="0" type="button" aria-label="add" disabled={this.state.AddButtonDisable} onClick={this.addTask}>
       {/* <Fab size="secondary" color="secondary" aria-label="add" onClick={this.addTask}> */}

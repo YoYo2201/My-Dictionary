@@ -338,6 +338,8 @@ body {
     transform: translateY(-50px);
 } */
 
+
+
 .pCover {
     height: 200px;
     overflow: scroll;
@@ -423,4 +425,175 @@ overflow: auto;
 
 p {
     margin-bottom: 0.5rem;
+}
+
+.css-4pp1z {
+    display: inline-flex;
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 0;
+    vertical-align: middle;
+    width: 42px;
+    height: 26px;
+    padding: 0px;
+    margin: 8px;
+}
+
+.css-4pp1z .MuiSwitch-switchBase.Mui-checked {
+    transform: translateX(16px);
+    color: rgb(255, 255, 255);
+  }
+  .css-4pp1z .MuiSwitch-switchBase {
+    padding: 0px;
+    margin: 2px;
+    transition-duration: 300ms;
+  }
+  .css-1nobdqi.Mui-checked {
+    color: rgb(144, 202, 249);
+  }
+  .css-1nobdqi.Mui-checked {
+    transform: translateX(20px);
+  }
+  .css-1nobdqi {
+    display: inline-flex;
+    -moz-box-align: center;
+    align-items: center;
+    -moz-box-pack: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background-color: transparent;
+    outline: currentcolor none 0px;
+    border: 0px none;
+    margin: 0px;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    appearance: none;
+    text-decoration: none;
+    padding: 9px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    color: rgb(224, 224, 224);
+    transition: left 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      transition-duration: 150ms, 150ms;
+  }
+
+  .css-1nobdqi .MuiSwitch-input {
+    left: -100%;
+    width: 300%;
+  }
+  .css-1m9pwf3 {
+    cursor: inherit;
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    padding: 0px;
+    z-index: 1;
+  }
+
+  .css-4pp1z .MuiSwitch-thumb {
+    box-sizing: border-box;
+    width: 22px;
+    height: 22px;
+  }
+  .css-19gndve {
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
+    background-color: currentcolor;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+
+  .css-4pp1z .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+    background-color: rgb(46, 202, 69);
+    opacity: 1;
+    border: 0px none;
+  }
+
+  .css-kswqkt {
+    display: inline-flex;
+    -moz-box-align: center;
+    align-items: center;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-left: -11px;
+    margin-right: 16px;
+  }
+
+  .css-4pp1z .MuiSwitch-track {
+    border-radius: 13px;
+    background-color: rgb(57, 57, 61);
+    opacity: 1;
+    transition: background-color 500ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  .css-g5sy4h {
+    height: 100%;
+    width: 100%;
+    border-radius: 7px;
+    z-index: -1;
+    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    background-color: rgb(255, 255, 255);
+    opacity: 0.3;
+  }
+
+  label {
+    position: relative;
+    float: right;
+  }
+
+  .css-1nobdqi.Mui-checked:hover {
+    background-color: rgba(144, 202, 249, 0.08);
+  }
+
+  .css-1nobdqi:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .css-9l3uo3 {
+    margin: 0;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+  }
+
+#inputContainer {
+    display: flex;
+}
+
+.suggestionBox {
+    position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  right: 0;
+  width: fit-content;
+}
+
+.searchElements {
+    padding: 10px;
+  cursor: pointer;
+  background-color: mintcream;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.searchElements:hover {
+    background-color: #e9e9e9;
+  }
+
+.elementActive {
+    background-color: DodgerBlue !important;
+    color: #ffffff;
 }
