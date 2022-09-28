@@ -545,7 +545,7 @@ p {
     opacity: 0.3;
   }
 
-  label {
+  label.MuiFormControlLabel-root {
     position: relative;
     float: right;
   }
