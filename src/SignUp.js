@@ -29,7 +29,7 @@ export default class SignUp extends Component {
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
       const otp = this.generateOTP();
-      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/sendOTP' : `${data.URL}:${PORT}/api/auth/sendOTP`
+      let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/sendOTP' : `${data.URL}:${PORT}/api/auth/sendOTP`
       bg.filter = 'blur(2px)';
       this.props.setStateData('load', true);
       const result = await fetch(url, {

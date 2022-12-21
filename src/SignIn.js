@@ -25,7 +25,7 @@ export default class SignIn extends Component {
       this.props.setStateData('load', true);
       bg.filter = 'blur(2px)';
       const PORT = process.env.PORT || 4000;
-      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/signIn' : `${data.URL}:${PORT}/api/auth/signIn`
+      let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/signIn' : `${data.URL}:${PORT}/api/auth/signIn`
       const result = await fetch(url, {
         method: "POST",
         headers: {

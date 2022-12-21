@@ -149,7 +149,7 @@ export default class DoIt extends Component {
   
     let bg = document.getElementById('DoItBackground').style;
     const PORT = process.env.PORT || 4000;
-    let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/getDictionary' : `${data.URL}:${PORT}/api/auth/getDictionary`
+    let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/getDictionary' : `${data.URL}:${PORT}/api/auth/getDictionary`
     bg.filter = 'blur(2px)';
     this.props.setStateData('load', true);
     const result = await fetch(url, {

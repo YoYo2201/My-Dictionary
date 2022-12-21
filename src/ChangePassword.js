@@ -26,7 +26,7 @@ export default class ChangePassword extends Component {
       {
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
-      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/changePassword' : `${data.URL}:${PORT}/api/auth/changePassword`
+      let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/changePassword' : `${data.URL}:${PORT}/api/auth/changePassword`
       bg.filter = 'blur(2px)';
       let email = this.props.state.data.email;
       let name = this.props.state.data.name;

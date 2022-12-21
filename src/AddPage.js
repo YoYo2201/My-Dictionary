@@ -33,9 +33,9 @@ export default class AddPage extends Component {
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
       if(this.props.dictionaryActive)
-        var url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/addPage' : `${data.URL}:${PORT}/api/auth/addPage`
+        var url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/addPage' : `${data.URL}:${PORT}/api/auth/addPage`
       else
-        var url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/addDoc' : `${data.URL}:${PORT}/api/auth/addDoc`
+        var url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/addDoc' : `${data.URL}:${PORT}/api/auth/addDoc`
       bg.filter = 'blur(2px)';
       this.props.setData('load', true);
       const result = await fetch(url, {
@@ -89,7 +89,7 @@ export default class AddPage extends Component {
       else {
       let bg = document.getElementById('DoItBackground').style;
       const PORT = process.env.PORT || 4000;
-      let url = process.env.NODE_ENV === 'production' ? 'https://mydictionary22.herokuapp.com/api/auth/getMeaning' : `${data.URL}:${PORT}/api/auth/getMeaning`
+      let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/getMeaning' : `${data.URL}:${PORT}/api/auth/getMeaning`
       this.setState({spinnerActive: true})
       const result = await fetch(url, {
         method: "POST",
