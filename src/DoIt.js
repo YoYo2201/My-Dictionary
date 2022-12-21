@@ -383,8 +383,16 @@ stopScroll(word, card) {
     const search = document.getElementById('search');
     const inputContainer = document.getElementById("inputContainer");
 
-    if(search.value.length === 0)
+    if(search.value.length === 0) {
+      this.setState({
+        disableButton: true,
+      })
       this.closeBox();
+    }
+    else
+      this.setState({
+        disableButton: false,
+      })
     var box = document.createElement("div");
     box.className = "suggestionBox";
     box.id = "suggest";
@@ -430,7 +438,7 @@ stopScroll(word, card) {
   document.getElementById("search").addEventListener("keydown", (e) => {
     try {
       let search = document.getElementById('search');
-      if(search.value === "")
+      if(search.value.length === 0)
         this.setState({
           disableButton: true,
         })
