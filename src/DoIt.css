@@ -86,7 +86,8 @@ top: 0px;
 width: 258px;
 height: 28px;
 left: 20px;
-top: 2px;
+top: 10px;
+overflow-x: auto;
 
 font-family: 'Kameron', serif;
 font-style: normal;
@@ -95,7 +96,7 @@ font-size: 25px;
 line-height: 20px;
 /* or 91% */
 
-display: inline;
+display: inline-block;
 align-items: center;
 letter-spacing: 0.09em;
 
@@ -199,13 +200,13 @@ i.logout::after {
     right: 5px;
 }
 
-@media (min-width: 1150px) {
+@media (min-width: 1250px) {
     #TaskContain {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-@media ((min-width: 580px) and (max-width: 1149px)) {
+@media ((min-width: 580px) and (max-width: 1249px)) {
     #TaskContain {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -217,6 +218,12 @@ i.logout::after {
     }
 }
 
+@media only screen and (max-width: 500px) {
+#searchButton {
+  width: 60%;
+ }
+}
+
 @media only screen and (max-width: 768px) {
     .form-control {
         position: relative;
@@ -226,14 +233,10 @@ i.logout::after {
 
    #NameFont {
     left: 6px;
-    top: -1px;
+    top: 4px;
     font-family: 'Times New Roman', 'Times', 'serif';
     font-size: 22px;
-   } 
-
-   #searchButton {
-    width: 60%;
-   } 
+   }  
   }
 
 .design{
@@ -596,4 +599,94 @@ p {
 .elementActive {
     background-color: DodgerBlue !important;
     color: #ffffff;
+}
+
+.delButton {
+  background: none;
+  border: none;
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  z-index: 10;
+}
+
+.delIcon {
+  color: red;
+  font-size: 30px;
+}
+
+.dialog-ovelay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.50);
+  z-index: 999999
+}
+.dialog-ovelay .dialog {
+  width: 400px;
+  margin: 100px auto 0;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0,0,0,.2);
+  border-radius: 3px;
+  overflow: hidden
+}
+.dialog-ovelay .dialog header {
+  padding: 10px 8px;
+  background-color: #f6f7f9;
+  border-bottom: 1px solid #e5e5e5
+}
+.dialog-ovelay .dialog header h3 {
+  font-size: 14px;
+  margin: 0;
+  color: #555;
+  display: inline-block
+}
+.dialog-ovelay .dialog header .fa-close {
+  float: right;
+  color: #c4c5c7;
+  cursor: pointer;
+  transition: all .5s ease;
+  padding: 0 2px;
+  border-radius: 1px    
+}
+.dialog-ovelay .dialog header .fa-close:hover {
+  color: #b9b9b9
+}
+.dialog-ovelay .dialog header .fa-close:active {
+  box-shadow: 0 0 5px #673AB7;
+  color: #a2a2a2
+}
+.dialog-ovelay .dialog .dialog-msg {
+  padding: 12px 10px
+}
+.dialog-ovelay .dialog .dialog-msg p{
+  margin: 0;
+  font-size: 15px;
+  color: #333
+}
+.dialog-ovelay .dialog footer {
+  border-top: 1px solid #e5e5e5;
+  padding: 8px 10px
+}
+.dialog-ovelay .dialog footer .controls {
+  direction: rtl
+}
+.dialog-ovelay .dialog footer .controls .button {
+  padding: 5px 15px;
+  border-radius: 3px
+}
+.button {
+cursor: pointer
+}
+.button-default {
+  background-color: rgb(248, 248, 248);
+  border: 1px solid rgba(204, 204, 204, 0.5);
+  color: #5D5D5D;
+}
+.button-danger {
+  background-color: #f44336;
+  border: 1px solid #d32f2f;
+  color: #f5f5f5
 }

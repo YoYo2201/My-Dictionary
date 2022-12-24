@@ -30,6 +30,9 @@ export default class DoIt extends Component {
     this.searchingActive = this.searchingActive.bind(this);
     this.closeBox = this.closeBox.bind(this);
     this.removeElementFromClass = this.removeElementFromClass.bind(this);
+    this.delContent = this.delContent.bind(this);
+    this.Confirm = this.Confirm.bind(this);
+    this.Cancel = this.Cancel.bind(this);
     this.state = {
       addActive: false,
       scrollId: null,
@@ -40,6 +43,70 @@ export default class DoIt extends Component {
     }
     this.scrollActive = 0;
     // this.searchSymbol = null;
+  }
+
+   async Confirm(id, Word, arr, page) {
+    const word = Word;
+    const email = this.props.data[1];
+    var alert = document.getElementById("deleteBox").style;
+    alert.display = "none";
+    let bg = document.getElementById('DoItBackground').style;
+    const PORT = process.env.PORT || 4000;
+    if(page == 'Dictionary')
+      var url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/deleteWordDict' : `${data.URL}:${PORT}/api/auth/deleteWordDict`
+    else
+      var url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/deleteWordDoc' : `${data.URL}:${PORT}/api/auth/deleteWordDoc`
+    bg.filter = 'blur(2px)';
+    this.props.setStateData('load', true);
+    try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        word,
+      }),
+    }).then((res) => res.json());
+  
+    this.props.setStateData('load', false);
+    bg.filter = '';
+    if(result.status === "error") {
+      this.props.alertFunc('danger', "Some Error Occurred!!!");
+    }
+    else {
+      this.props.alertFunc('success', "Item Deleted!!");
+      arr.splice(id, 1);
+      this.removeDictionary(page);
+      localStorage.setItem(this.props.data[1]+page, JSON.stringify(arr));
+      // this.removeDictionary('Document');
+      this.displayDictionary(page);
+      // this.displayDictionary('Document');
+    }
+    this.setState({
+      AddButtonDisable: false,
+    })
+  }
+  catch {
+    this.props.setStateData('load', false);
+    bg.filter = '';
+    this.props.alertFunc('danger', "Network Error Occurred!!!");
+  }
+   }
+
+   Cancel() {
+    var alert = document.getElementById("deleteBox").style;
+    alert.display = "none";
+   }
+
+  delContent(id, word, arr, page) {
+    var alert = document.getElementById("deleteBox").style;
+    alert.display = "";
+    let doAction = document.getElementById("doAction");
+    let cancelAction = document.getElementById("cancelAction");
+    doAction.onclick = () => this.Confirm(id, word, arr, page);
+    cancelAction.onclick = () => this.Cancel();
   }
 
   displayDictionary(page) {
@@ -62,12 +129,19 @@ export default class DoIt extends Component {
         const h3 = document.createElement("h3");
         const p = document.createElement("p");
         const task_contain = document.getElementById("TaskContain");
+
+        const delButton = document.createElement("button");
+        const delIcon = document.createElement("i");
   
         card.className = "card";
         box.className = "box";
         content.className = "content";
         pCover.className = "pCover";
         h3_cover.className = "hCover";
+        delIcon.className = "delIcon material-icons";
+        delButton.id = i;
+        delButton.className = "delButton";
+        delIcon.innerText = "delete";
         // task.style.maxWidth = "20rem";
         // task_font.className = "TaskFont card-text";
         if(i+1 < 10)
@@ -75,9 +149,13 @@ export default class DoIt extends Component {
         else
           h2.innerText = i+1;
         h3.innerText = arr[i][0];
+
+        delButton.onclick = () => {this.delContent(i, arr[i][0], arr, page)};
         // task.id = "Task"+i;
         // task_content.append(meaning);
         p.innerText = arr[i][1];
+        delButton.append(delIcon);
+        box.append(delButton);
         box.append(h2);
         h3_cover.append(h3);
         content.append(h3_cover);
@@ -88,6 +166,7 @@ export default class DoIt extends Component {
         // task.append(task_content);
         // task_cover.append(task);
         task_contain.append(card);
+
       }
   
     //     let TaskC = document.querySelectorAll(".Task");
@@ -113,36 +192,11 @@ export default class DoIt extends Component {
     // })
   }
     }
-    catch {
-      ;
+    catch (error){
+      console.log(error);
     }
   }
 
-  // expandWord(arr, i) {
-  //   const task = document.getElementById("Task"+i);
-  //   const task_content = document.createElement("div");
-  //   const meaning = document.createElement("h5");
-  //   const task_font = document.createElement("p");
-  //   const button = document.getElementsByClassName("expandMore "+i);
-  //   task_content.className = "card-body";
-  //   meaning.className = "card-title";
-  //   meaning.innerText = "Meaning: ";
-  //   task_font.className = "card-text";
-  //   task_font.innerText = arr[i][1];
-  //   task_content.append(meaning);
-  //   task_content.append(task_font);
-  //   task.append(task_content);
-  //   button[0].onclick = () => this.shrinkWord(arr, i);
-  //   button[1].innerHTML = "&#xe5ce";
-  // }
-
-  // shrinkWord(arr, i) {
-  //   let task_content = document.getElementsByClassName("card-body");
-  //   const button = document.getElementsByClassName("expandMore "+i);
-  //   button[0].onclick = () => this.expandWord(arr, i);
-  //   button[1].innerHTML = "&#xe5cf";
-  //   task_content[0].remove();
-  // }
 
   async getTasks(Email) {
     const email = Email;
@@ -152,6 +206,7 @@ export default class DoIt extends Component {
     let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/getDictionary' : `${data.URL}:${PORT}/api/auth/getDictionary`
     bg.filter = 'blur(2px)';
     this.props.setStateData('load', true);
+    try {
     const result = await fetch(url, {
       method: "POST",
       headers: {
@@ -181,6 +236,12 @@ export default class DoIt extends Component {
     this.setState({
       AddButtonDisable: false,
     })
+  }
+  catch {
+    this.props.setStateData('load', false);
+    bg.filter = '';
+    this.props.alertFunc('danger', "Network Error Occurred!!!");
+  }
   }
 
 
@@ -306,7 +367,7 @@ stopScroll(word, card) {
         var card = cards[i].style;
         if(window.innerWidth <= 580)
           row = 1;
-        else if((window.innerWidth > 580) && (window.innerWidth <= 1149))
+        else if((window.innerWidth > 580) && (window.innerWidth <= 1249))
           row = 2;
         else 
           row = 3;
@@ -508,9 +569,19 @@ stopScroll(word, card) {
 
     const TaskContainer = document.getElementById("TaskContainer").style;
     const TaskContain = document.getElementById('TaskContain').style;
+    const NameFont = document.getElementById("NameFont").style;
     TaskContain.top = (window.innerHeight - 74)/8 + "px";
     TaskContain.maxHeight = ((window.innerHeight - 74) - (window.innerHeight - 74)/4) + "px";
 
+    if(window.innerWidth > 768) {
+      NameFont.width = (window.innerWidth-(351+39+5+40))+"px";
+    }
+    else if(window.innerWidth <= 768 && window.innerWidth > 500) {
+      NameFont.width = (window.innerWidth-(306+39+5))+"px";
+    }
+    else {
+      NameFont.width = (window.innerWidth-((0.6*window.innerWidth)+39+5))+"px";
+    }
     if(window.innerWidth > 768)
       this.setState({searchSymbol: false});
     else
@@ -546,7 +617,7 @@ stopScroll(word, card) {
       }
     }
     else if((window.innerWidth > 768) && (window.innerWidth <= 840)) {
-      TaskContainer.maxWidth = window.innerWidth/1.3+"px"
+      TaskContainer.maxWidth = window.innerWidth/1.2+"px"
       TaskContainer.position = 'relative';
       TaskContainer.top = "0px";
       TaskContain.width = TaskContainer.maxWidth;
@@ -561,7 +632,7 @@ stopScroll(word, card) {
     else if((window.innerWidth > 840) && (window.innerWidth <= 920)) {
       TaskContainer.position = 'relative';
       TaskContainer.top = "0px";
-      TaskContainer.maxWidth = window.innerWidth/1.5+"px"
+      TaskContainer.maxWidth = window.innerWidth/1.2+"px"
       TaskContain.width = TaskContainer.maxWidth;
       try {
         let suggest = document.getElementById("suggest").style;
@@ -574,7 +645,7 @@ stopScroll(word, card) {
     else if((window.innerWidth > 920) && (window.innerWidth <= 1440)) {
       TaskContainer.position = 'relative';
       TaskContainer.top = "0px";
-      TaskContainer.maxWidth = window.innerWidth/1.7+"px"
+      TaskContainer.maxWidth = window.innerWidth/1.3+"px"
       TaskContain.width = TaskContainer.maxWidth;
       try {
         let suggest = document.getElementById("suggest").style;
@@ -587,7 +658,7 @@ stopScroll(word, card) {
     else {
       TaskContainer.position = 'relative';
       TaskContainer.top = "0px";
-      TaskContainer.maxWidth = window.innerWidth/1.9+"px"
+      TaskContainer.maxWidth = window.innerWidth/1.5+"px"
       TaskContain.width = TaskContainer.maxWidth;
       try {
         let suggest = document.getElementById("suggest").style;
@@ -655,6 +726,17 @@ stopScroll(word, card) {
     const TaskContain = document.getElementById('TaskContain').style;
     TaskContain.top = (window.innerHeight - 74)/8 + "px";
     TaskContain.maxHeight = ((window.innerHeight - 74) - (window.innerHeight - 74)/4) + "px";
+    const NameFont = document.getElementById("NameFont").style;
+
+    if(window.innerWidth > 768) {
+      NameFont.width = (window.innerWidth-(351+39+5+40))+"px";
+    }
+    else if(window.innerWidth <= 768 && window.innerWidth > 500) {
+      NameFont.width = (window.innerWidth-(306+39+5))+"px";
+    }
+    else {
+      NameFont.width = (window.innerWidth-((0.6*window.innerWidth)+39+5))+"px";
+    }
 
     if(window.innerWidth > 768)
       this.setState({searchSymbol: false});
@@ -692,7 +774,7 @@ stopScroll(word, card) {
         }
       }
       else if((window.innerWidth > 768) && (window.innerWidth <= 840)) {
-        TaskContainer.maxWidth = window.innerWidth/1.3+"px"
+        TaskContainer.maxWidth = window.innerWidth/1.2+"px"
         TaskContainer.position = 'relative';
         TaskContainer.top = "0px";
         TaskContain.width = TaskContainer.maxWidth;
@@ -707,7 +789,7 @@ stopScroll(word, card) {
       else if((window.innerWidth > 840) && (window.innerWidth <= 920)) {
         TaskContainer.position = 'relative';
         TaskContainer.top = "0px";
-        TaskContainer.maxWidth = window.innerWidth/1.5+"px"
+        TaskContainer.maxWidth = window.innerWidth/1.2+"px"
         TaskContain.width = TaskContainer.maxWidth;
         try {
           let suggest = document.getElementById("suggest").style;
@@ -720,7 +802,7 @@ stopScroll(word, card) {
       else if((window.innerWidth > 920) && (window.innerWidth <= 1440)) {
         TaskContainer.position = 'relative';
         TaskContainer.top = "0px";
-        TaskContainer.maxWidth = window.innerWidth/1.7+"px"
+        TaskContainer.maxWidth = window.innerWidth/1.3+"px"
         TaskContain.width = TaskContainer.maxWidth;
         try {
           let suggest = document.getElementById("suggest").style;
@@ -733,7 +815,7 @@ stopScroll(word, card) {
       else {
         TaskContainer.position = 'relative';
         TaskContainer.top = "0px";
-        TaskContainer.maxWidth = window.innerWidth/1.9+"px"
+        TaskContainer.maxWidth = window.innerWidth/1.5+"px"
         TaskContain.width = TaskContainer.maxWidth;
         try {
           let suggest = document.getElementById("suggest").style;
@@ -782,7 +864,7 @@ stopScroll(word, card) {
   <div class="collapse navbar-collapse" id="navbarTogglerDemo03" style={{display: 'flex'}}>
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       <li class="nav-item active">
-      <p id="NameFont" style={{ width: window.innerWidth - (43 + 20 + 45) + "px" }}>
+      <p id="NameFont">
         {name}
       </p>
       </li>
@@ -809,8 +891,28 @@ stopScroll(word, card) {
         </span>
         <span class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-9l3uo3" style={{color: 'rgb(46, 202, 69)'}}>Dictionary</span>
         </label>
+    
+    <div class='dialog-ovelay' id="deleteBox" style={{display: 'none'}}>
+      <div class='dialog'>
+        <header>
+          <h3>Delete</h3>
+            <i class='fa fa-close'></i>
+        </header>
+        <div class='dialog-msg'>
+          <p>Are you sure you want to delete?</p>
+        </div>
+        <footer>
+          <div class='controls'>
+            <button class='button button-danger' id="doAction">Yes</button>
+            <button class='button button-default' id='cancelAction'>Cancel</button>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+
 <section id="TaskContainer">
-  <div style={{display: 'flex'}}>
+  <div style={{display: 'block', margin: 'block'}}>
         <div
         id="TaskContain"
         style={{paddingRight: '23px'}}

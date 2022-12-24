@@ -133,7 +133,6 @@ router.post("/addPage", async(req, res) => {
     }
   }
   catch (error) {
-    console.log(error)
     res.json({ status: "error" });
   }
 });
@@ -171,7 +170,67 @@ router.post("/addDoc", async(req, res) => {
     }
   }
   catch (error) {
-    console.log(error)
+    res.json({ status: "error" });
+  }
+});
+
+router.post("/deleteWordDict", async(req, res) => {
+  try {
+  const {email, word} = req.body;
+  var id;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+ 
+  const dict = await Collection1.doc(email).collection('DICTIONARY').get();
+  if(dict) {
+    dict.docs.forEach(doc => {
+      if(decrypt(doc.data().Word) == word) {
+        id = doc.id;
+      }
+    });
+
+    const user = await Collection1.doc(email).collection('DICTIONARY').doc(id).delete();
+    if(user)
+      res.json({ status: "ok" });
+    else
+      res.json({ status: "error" });
+  }
+  else
+    res.json({ status: "error" });
+  }
+  catch (error) {
+    res.json({ status: "error" });
+  }
+});
+
+router.post("/deleteWordDoc", async(req, res) => {
+  try {
+  const {email, word} = req.body;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+
+  const dict = await Collection1.doc(email).collection('DOCUMENT').get();
+  if(dict) {
+    dict.docs.forEach(doc => {
+      if(decrypt(doc.data().Word) == word) {
+        id = doc.id;
+      }
+    });
+
+    const user = await Collection1.doc(email).collection('DOCUMENT').doc(id).delete();
+    if(user)
+      res.json({ status: "ok" });
+    else
+      res.json({ status: "error" });
+  }
+  else
+    res.json({ status: "error" });
+  }
+  catch (error) {
     res.json({ status: "error" });
   }
 });
