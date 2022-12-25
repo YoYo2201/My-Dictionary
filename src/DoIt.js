@@ -109,6 +109,20 @@ export default class DoIt extends Component {
     cancelAction.onclick = () => this.Cancel();
   }
 
+  isValidURL(data) {
+    let link = data.match(
+      /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+    );
+    if (link !== null) {
+      if (
+        data.indexOf("http://") === 0 ||
+        data.indexOf("https://") === 0
+      )
+        return 1;
+      else return 2;    // Append https:// to data
+    } else return 0;
+  };
+
   displayDictionary(page) {
     try {
     if(this.props.active[1] === true) {
@@ -153,12 +167,37 @@ export default class DoIt extends Component {
         delButton.onclick = () => {this.delContent(i, arr[i][0], arr, page)};
         // task.id = "Task"+i;
         // task_content.append(meaning);
-        p.innerText = arr[i][1];
         delButton.append(delIcon);
         box.append(delButton);
         box.append(h2);
         h3_cover.append(h3);
         content.append(h3_cover);
+
+        var flag = this.isValidURL(arr[i][1]);
+        if(flag == 0) {
+          p.innerText = arr[i][1];
+          pCover.append(p);  
+        }
+        else if(flag == 1) {
+          let msg2 = arr[i][1];
+          let anchorElement = document.createElement("a");
+          anchorElement.href = msg2;
+          anchorElement.title = msg2;
+          anchorElement.target = "_blank";
+          let link = document.createTextNode(msg2);
+          anchorElement.appendChild(link);
+          p.append(anchorElement);
+        }
+        else {
+          let msg2 = "https://"+arr[i][1];
+          let anchorElement = document.createElement("a");
+          anchorElement.href = msg2;
+          anchorElement.title = msg2;
+          anchorElement.target = "_blank";
+          let link = document.createTextNode(msg2);
+          anchorElement.appendChild(link);
+          p.append(anchorElement);
+        }
         pCover.append(p);
         content.append(pCover);
         box.append(content);
