@@ -269,9 +269,9 @@ export default class DoIt extends Component {
       setTimeout(() => {
         this.removeDictionary('Dictionary');
         this.displayDictionary('Dictionary');
+        this.props.setStateData('load', false);
+        bg.filter = '';
       }, 1000);
-      this.props.setStateData('load', false);
-      bg.filter = '';
     }
     this.setState({
       AddButtonDisable: false,
