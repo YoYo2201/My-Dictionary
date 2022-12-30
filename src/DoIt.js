@@ -232,7 +232,7 @@ export default class DoIt extends Component {
   }
     }
     catch (error){
-      console.log(error);
+      ;
     }
   }
 
@@ -243,8 +243,6 @@ export default class DoIt extends Component {
     let bg = document.getElementById('DoItBackground').style;
     const PORT = process.env.PORT || 4000;
     let url = process.env.NODE_ENV === 'production' ? 'https://my-dictionary.onrender.com/api/auth/getDictionary' : `${data.URL}:${PORT}/api/auth/getDictionary`
-    bg.filter = 'blur(2px)';
-    this.props.setStateData('load', true);
     try {
     const result = await fetch(url, {
       method: "POST",
@@ -256,8 +254,6 @@ export default class DoIt extends Component {
       }),
     }).then((res) => res.json());
   
-    this.props.setStateData('load', false);
-    bg.filter = '';
     if(result.status === "error") {
       this.props.alertFunc('danger', "Some Error Occurred!!!");
       this.props.active[0] = true;
@@ -267,18 +263,23 @@ export default class DoIt extends Component {
       localStorage.setItem(email+'Document', JSON.stringify(result.document));
       this.props.active[1] = true;
       this.props.active[0] = true;
-      this.removeDictionary('Dictionary');
-      // this.removeDictionary('Document');
-      this.displayDictionary('Dictionary');
-      // this.displayDictionary('Document');
+      this.props.alertFunc('success', "Updating Documents!");
+      bg.filter = 'blur(2px)';
+      this.props.setStateData('load', true);
+      setTimeout(() => {
+        this.removeDictionary('Dictionary');
+        this.displayDictionary('Dictionary');
+      }, 1000);
+      this.props.setStateData('load', false);
+      bg.filter = '';
     }
     this.setState({
       AddButtonDisable: false,
     })
   }
   catch {
-    this.props.setStateData('load', false);
-    bg.filter = '';
+    // this.props.setStateData('load', false);
+    // bg.filter = '';
     this.props.alertFunc('danger', "Network Error Occurred!!!");
   }
   }
@@ -583,8 +584,14 @@ stopScroll(word, card) {
       }
     }
     if(localStorage.getItem('Email')) {
+      this.props.active[1] = true;
+      this.props.active[0] = true;
       this.props.data[1] = localStorage.getItem('Email');
-      this.getTasks(this.props.data[1]);
+      let p1 = new Promise((resolve, reject) => {
+        this.getTasks(this.props.data[1]);
+        resolve(true);
+      })
+      this.displayDictionary('Dictionary');
     }
     else
       this.props.navigate('/', true);
